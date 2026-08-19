@@ -1497,7 +1497,7 @@ const SAMPLE_ENTRIES = [
     commitments:[]
   },
   { periodStart:"2026-08-31", periodEnd:"2026-09-04", periodLabel:"8월 31일 ~ 9월 4일",
-    type:"하드 워커", typeReason:"다시 바빠졌는데, 이번엔 확인 못 하고 넘어갈까 봐 되묻는 질문이 늘었습니다.",
+    type:"하드 워커", typeReason:"다시 바빠졌는데, 놓치는 게 없는지 되묻는 질문이 늘었습니다.",
     load:68,
     scores:{digitalization:74,responsiveness:52,clarity:68,initiative:55,kindness:70},
     workMode:{"진행관리":25,"문제 제기":15,"명확화":40,"실행·전달":20}, hasTimestamps:true,
@@ -2474,7 +2474,7 @@ function renderCareerLab(){
   return `<div class="career-hero">
     <div class="career-hero-badge">AI가 파악한 나</div>
     <h2>내가 몰랐던 나를, 근거로 확인해보세요</h2>
-    <p>${entries.length}개 기간의 협업 기록에서 찾은 강점·약점으로, 이력서·면접 답변·성장 서사를 미리 정리해뒀습니다.</p>
+    <p>지금까지 쌓인 협업 기록에서 찾은 강점·약점으로, 이력서·면접 답변·성장 서사를 미리 정리해뒀습니다.</p>
   </div>
   ${renderStrengthsCard()}
   ${renderDefaultDocCard("resume","이력서 항목")}
