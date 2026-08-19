@@ -1,0 +1,2602 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>콜라브레인 퍼스널 · 나의 상태</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root{
+    --bg:#f4f6f9; --panel:#ffffff; --panel-2:#f7f8fa; --line:#e8eaee; --line-2:#f0f2f5;
+    --text-hi:#1f2329; --text-mid:#5b6270; --text-low:#98a0ae;
+    --blue:#3d6ef7; --blue-soft:#eaf0fe; --blue-dim:#c3d4fd;
+    --green:#3fb98a; --green-soft:#e6f6ef;
+    --yellow:#f0b429; --orange:#f5883c; --pink:#ef6b8a; --purple:#9b7ede;
+    --red:#e5484d; --red-soft:#fdecec; --gray:#545a66;
+    --radius:14px; --shadow:0 1px 2px rgba(16,24,40,0.05), 0 1px 3px rgba(16,24,40,0.04);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text-hi);
+    font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    min-height:100vh;padding:28px 16px 72px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:660px;margin:0 auto;}
+
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+  .brand{display:flex;align-items:center;gap:9px;cursor:pointer;}
+  .logo{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#5b8bff,#3d6ef7 55%,#7be0c4);}
+  .wordmark{font-size:17px;font-weight:700;letter-spacing:-0.02em;}
+  .daterange{font-size:12.5px;color:var(--text-low);}
+
+  .nav{display:flex;gap:18px;margin-bottom:22px;border-bottom:1px solid var(--line);}
+  .nav button{background:none;border:none;border-bottom:2px solid transparent;color:var(--text-low);
+    font-family:inherit;font-size:14.5px;padding:9px 1px 11px;cursor:pointer;transition:color .15s,border-color .15s;}
+  .nav button:hover{color:var(--text-mid);}
+  .nav button.active{color:var(--text-hi);border-bottom-color:var(--text-hi);font-weight:700;}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 20px 18px;margin-bottom:14px;box-shadow:var(--shadow);}
+  .card-title{font-size:15px;font-weight:700;margin:0 0 16px;display:flex;
+    justify-content:space-between;align-items:center;gap:10px;}
+  .card-note{font-size:11.5px;color:var(--text-low);line-height:1.65;margin-top:12px;}
+  .chart-scroll{overflow-x:auto;}
+  .subhead{font-size:12px;color:var(--text-low);font-weight:700;margin:0 0 6px;}
+  .link{background:none;border:none;color:var(--blue);font-family:inherit;font-size:12.5px;
+    font-weight:600;cursor:pointer;padding:0;}
+
+  .empty{text-align:center;padding:56px 20px;color:var(--text-mid);background:var(--panel);
+    border:1px dashed var(--line);border-radius:var(--radius);}
+  .empty h2{font-size:19px;font-weight:700;color:var(--text-hi);margin:0 0 8px;}
+  .empty p{font-size:14px;line-height:1.65;margin:0;}
+
+  /* 아바타 */
+  .avatar{position:relative;border-radius:24px;display:flex;align-items:center;justify-content:center;
+    overflow:hidden;flex-shrink:0;}
+  .avatar-emoji{font-size:1em;line-height:1;}
+  .avatar-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;}
+  .a-lg{width:84px;height:84px;font-size:38px;border-radius:26px;}
+  .a-md{width:56px;height:56px;font-size:26px;border-radius:18px;}
+  .a-sm{width:38px;height:38px;font-size:18px;border-radius:13px;}
+
+  .type-card{display:flex;align-items:center;gap:17px;}
+  .type-code{font-size:11.5px;font-weight:800;letter-spacing:0.08em;color:var(--text-low);margin-bottom:3px;}
+  .type-label{font-size:21px;font-weight:700;letter-spacing:-0.02em;margin:0 0 5px;}
+  .type-sub{font-size:13.5px;color:var(--text-mid);line-height:1.6;margin:0;}
+  .coverage{display:inline-block;margin-top:9px;font-size:11.5px;color:var(--text-mid);
+    background:var(--panel-2);border:1px solid var(--line);padding:3px 9px;border-radius:20px;}
+  .rep-row{display:flex;align-items:center;gap:12px;padding:12px 0 0;margin-top:14px;border-top:1px solid var(--line-2);}
+  .rep-text{font-size:12.5px;color:var(--text-mid);line-height:1.6;}
+  .rep-text b{color:var(--text-hi);}
+
+  .hero-line{display:flex;align-items:baseline;gap:9px;margin-bottom:10px;}
+  .hero-num{font-size:36px;font-weight:800;letter-spacing:-0.03em;line-height:1;font-variant-numeric:tabular-nums;}
+  .track{height:8px;background:var(--line-2);border-radius:6px;overflow:hidden;position:relative;}
+  .fill{height:100%;border-radius:6px;background:var(--blue);}
+  .bench-mark{position:absolute;top:-3px;width:2px;height:14px;background:var(--text-low);border-radius:1px;}
+  .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:18px;}
+  .tile{background:var(--panel);padding:13px 14px;}
+  .tile-label{font-size:11.5px;color:var(--text-low);margin-bottom:5px;}
+  .tile-value{font-size:14px;font-weight:700;line-height:1.35;}
+  .tile-sub{font-size:12px;color:var(--text-mid);margin-top:2px;font-variant-numeric:tabular-nums;}
+
+  .d{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;}
+  .d-up{color:var(--blue);} .d-down{color:var(--red);} .d-flat{color:var(--text-low);}
+  .d i{width:13px;height:13px;border-radius:50%;display:inline-flex;align-items:center;
+    justify-content:center;font-size:9px;font-style:normal;color:#fff;}
+  .d-up i{background:var(--blue);} .d-down i{background:var(--red);} .d-flat i{background:var(--text-low);}
+
+  .score-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line-2);cursor:pointer;}
+  .score-row:last-of-type{border-bottom:none;}
+  .score-row:hover .score-name{color:var(--blue);}
+  .score-name{flex:0 0 104px;font-size:13.5px;font-weight:600;transition:color .15s;}
+  .score-num{flex:0 0 30px;text-align:right;font-variant-numeric:tabular-nums;font-size:14px;font-weight:700;}
+  .score-delta{flex:0 0 60px;text-align:right;}
+  .score-chev{flex:0 0 8px;text-align:right;color:var(--text-low);font-size:13px;}
+  .score-caveat{color:var(--text-low);font-weight:400;}
+
+  .mix-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--line-2);margin-bottom:13px;}
+  .mix-seg{height:100%;}
+  .mix-legend{display:flex;flex-wrap:wrap;gap:14px;}
+  .mix-item{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-mid);}
+  .mix-dot{width:8px;height:8px;border-radius:3px;}
+  .mix-pct{color:var(--text-hi);font-weight:700;font-variant-numeric:tabular-nums;}
+
+  .narrative{font-size:15.5px;line-height:1.7;margin:0;font-weight:500;}
+  .why{font-size:13.5px;color:var(--text-mid);line-height:1.75;margin-top:9px;}
+  .gap-note{font-size:13px;line-height:1.7;margin-top:12px;padding:12px 14px;background:var(--blue-soft);border-radius:10px;}
+
+  .ins{display:flex;gap:9px;padding:9px 0;}
+  .ins-icon{flex:0 0 15px;font-size:11px;line-height:1.7;}
+  .ins-pos{color:var(--blue);} .ins-neg{color:var(--red);}
+  .ins-text{font-size:13px;line-height:1.75;color:var(--text-mid);}
+
+  .imp{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden;}
+  .imp:last-child{margin-bottom:0;}
+  .imp-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 14px;
+    background:var(--panel-2);border-bottom:1px solid var(--line);}
+  .imp-rank{font-size:10.5px;font-weight:700;background:var(--blue-soft);color:var(--blue);padding:3px 8px;border-radius:6px;}
+  .imp-metric{font-size:14px;font-weight:700;}
+  .imp-block{display:flex;gap:12px;padding:10px 14px;border-top:1px solid var(--line-2);}
+  .imp-block:first-of-type{border-top:none;}
+  .imp-label{flex:0 0 58px;font-size:11.5px;color:var(--text-low);padding-top:2px;font-weight:700;}
+  .imp-body{flex:1;font-size:12.5px;line-height:1.75;color:var(--text-mid);}
+  .imp-body ul{margin:0;padding-left:15px;} .imp-body li{margin-bottom:2px;}
+  .imp-more{background:none;border:none;color:var(--blue);font-size:12px;cursor:pointer;
+    padding:0;font-family:inherit;margin-left:auto;font-weight:700;}
+
+  .cmt{padding:14px 0;border-bottom:1px solid var(--line-2);}
+  .cmt:first-of-type{padding-top:0;} .cmt:last-child{border-bottom:none;padding-bottom:0;}
+  .cmt-head{display:flex;align-items:center;gap:6px;margin-bottom:7px;flex-wrap:wrap;}
+  .badge{font-size:11px;padding:3px 8px;border-radius:6px;background:var(--panel-2);
+    border:1px solid var(--line);color:var(--text-mid);font-weight:600;}
+  .badge-exp{background:var(--blue-soft);border-color:var(--blue-dim);color:var(--blue);}
+  .badge-promise{background:#fff4e3;border-color:#ffd9a0;color:#c47a12;}
+  .badge-due{background:var(--red-soft);border-color:#f7c4c4;color:var(--red);}
+  .badge-pos{background:var(--green-soft);border-color:#b9e6d1;color:#1e8f66;}
+  .badge-neg{background:var(--red-soft);border-color:#f7c4c4;color:var(--red);}
+  .cmt-title{font-size:15px;font-weight:700;margin:0 0 4px;}
+  .cmt-desc{font-size:13.5px;color:var(--text-mid);line-height:1.7;margin:0 0 13px;}
+  .cmt-status{font-size:12.5px;color:var(--text-mid);font-weight:600;}
+
+  .btn{font-family:inherit;font-size:13.5px;font-weight:600;padding:10px 16px;border-radius:9px;
+    border:1px solid var(--line);background:var(--panel);color:var(--text-hi);cursor:pointer;
+    transition:background .15s,border-color .15s;}
+  .btn:hover{background:var(--panel-2);border-color:#d6dae1;}
+  .btn:disabled{opacity:0.5;cursor:default;}
+  .btn-primary{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .btn-primary:hover{background:#3260e0;border-color:#3260e0;}
+  .btn-full{width:100%;} .btn-sm{font-size:12px;padding:6px 11px;}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .seg{display:flex;gap:5px;flex-wrap:wrap;}
+  .seg button{font-size:12px;padding:5px 11px;border-radius:7px;border:1px solid var(--line);
+    background:var(--panel);color:var(--text-mid);cursor:pointer;font-family:inherit;font-weight:600;}
+  .seg button:hover{background:var(--panel-2);}
+  .seg button.on{border-color:var(--blue);background:var(--blue-soft);color:var(--blue);}
+
+  textarea{width:100%;min-height:140px;background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    color:var(--text-hi);font-family:inherit;font-size:13.5px;padding:13px;line-height:1.65;resize:vertical;margin-bottom:10px;}
+  textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft);}
+  input[type=text],input[type=password],select{width:100%;background:var(--panel);border:1px solid var(--line);
+    border-radius:9px;color:var(--text-hi);font-family:inherit;font-size:13.5px;padding:10px 12px;margin-bottom:13px;}
+  input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft);}
+  input[type=file]{width:100%;font-size:12.5px;color:var(--text-mid);margin-bottom:13px;}
+  label{font-size:12.5px;color:var(--text-mid);display:block;margin-bottom:6px;font-weight:600;}
+  .hint{font-size:11.5px;color:var(--text-low);line-height:1.65;margin:-7px 0 13px;}
+  .block-head{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;
+    color:var(--text-mid);margin-bottom:7px;font-weight:600;}
+  .block-head a{color:var(--red);cursor:pointer;font-size:12px;font-weight:500;}
+
+  .stale-banner{font-size:12.5px;color:var(--text-mid);text-align:center;padding:10px;
+    background:#fff8e8;border:1px solid #ffe2ab;border-radius:10px;margin-bottom:14px;}
+  .trophy-banner{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;
+    background:linear-gradient(120deg,#fff6e0,#f0f5ff);border:1px solid #ffe2ab;margin-bottom:14px;}
+  .trophy-banner .tb-emojis{font-size:22px;letter-spacing:-2px;}
+  .trophy-banner .tb-text{flex:1;font-size:13px;line-height:1.6;}
+  .trophy-banner b{font-weight:700;}
+
+  .footer-note{text-align:center;font-size:12px;color:var(--text-low);margin-top:22px;line-height:1.7;}
+  .danger{color:var(--red)!important;}
+  .loading{display:flex;align-items:center;gap:10px;color:var(--text-mid);font-size:13px;padding:14px 0;}
+  .spinner{width:15px;height:15px;border-radius:50%;border:2px solid var(--line);
+    border-top-color:var(--blue);animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .error-box{background:var(--red-soft);border:1px solid #f7c4c4;color:#b5292e;padding:11px 13px;
+    border-radius:9px;font-size:12.5px;margin-bottom:13px;line-height:1.65;}
+
+  .clg{padding:15px 0;border-bottom:1px solid var(--line-2);}
+  .clg:last-child{border-bottom:none;padding-bottom:0;}
+  .clg-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+  .clg-name{font-size:15px;font-weight:700;}
+  .clg-meta{font-size:12px;color:var(--text-low);}
+  .clg-pattern{font-size:13px;color:var(--text-mid);line-height:1.75;padding-left:13px;position:relative;}
+  .clg-pattern::before{content:'·';position:absolute;left:4px;color:var(--text-low);}
+
+  .hist{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:1px solid var(--line-2);}
+  .hist:last-child{border-bottom:none;}
+  .hist-date{flex:0 0 112px;font-size:12.5px;color:var(--text-mid);font-variant-numeric:tabular-nums;}
+  .hist-type{flex:1;font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:7px;}
+  .hist-score{font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums;flex:0 0 28px;text-align:right;}
+
+  /* 도감 */
+  .dex{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;}
+  .dex-cell{border:1px solid var(--line);border-radius:12px;padding:11px 7px 10px;text-align:center;
+    background:var(--panel);cursor:pointer;transition:border-color .15s,transform .1s;}
+  .dex-cell:hover{border-color:var(--blue);transform:translateY(-1px);}
+  .dex-cell.locked{background:var(--panel-2);cursor:default;opacity:0.72;}
+  .dex-cell.locked:hover{border-color:var(--line);transform:none;}
+  .dex-name{font-size:11px;font-weight:700;margin-top:7px;line-height:1.35;}
+  .dex-code{font-size:9.5px;color:var(--text-low);font-weight:700;letter-spacing:0.06em;margin-top:2px;}
+  .dex-cell .avatar{margin:0 auto;}
+  .dex-lock{width:38px;height:38px;border-radius:13px;background:var(--line-2);margin:0 auto;
+    display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text-low);}
+  .dex-progress{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .dex-progress .track{flex:1;}
+
+  /* 트로피 */
+  .trophy{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid var(--line-2);}
+  .trophy:last-child{border-bottom:none;}
+  .trophy.locked{opacity:0.45;}
+  .tr-icon{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+    font-size:21px;background:linear-gradient(135deg,#fff2d4,#ffe0a6);flex-shrink:0;}
+  .trophy.locked .tr-icon{background:var(--line-2);}
+  .tr-name{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .tr-desc{font-size:12px;color:var(--text-mid);margin-top:2px;line-height:1.55;}
+  .tr-when{font-size:11.5px;color:var(--text-low);margin-top:3px;font-variant-numeric:tabular-nums;}
+  .tag-retro{font-size:10px;font-weight:600;background:var(--panel-2);border:1px solid var(--line);
+    color:var(--text-low);padding:2px 6px;border-radius:5px;}
+  .tag-new{font-size:10px;font-weight:700;background:var(--blue);color:#fff;padding:2px 6px;border-radius:5px;}
+
+  /* 소개 */
+  .intro-hero{text-align:center;padding:8px 0 4px;}
+  .intro-hero h1{font-size:24px;font-weight:800;letter-spacing:-0.03em;margin:0 0 10px;line-height:1.35;}
+  .intro-hero p{font-size:14px;color:var(--text-mid);line-height:1.75;margin:0;}
+  .intro-step{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--line-2);}
+  .intro-step:last-of-type{border-bottom:none;}
+  .intro-num{flex:0 0 26px;height:26px;border-radius:9px;background:var(--blue-soft);color:var(--blue);
+    font-size:12.5px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+  .intro-t{font-size:14px;font-weight:700;margin-bottom:4px;}
+  .intro-d{font-size:13px;color:var(--text-mid);line-height:1.7;}
+  .dots{display:flex;gap:6px;justify-content:center;margin:18px 0 4px;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--line);}
+  .dot.on{background:var(--blue);width:18px;border-radius:3px;}
+
+  .back{background:none;border:none;color:var(--text-mid);font-family:inherit;font-size:13px;
+    cursor:pointer;padding:0 0 13px;font-weight:600;}
+  .back:hover{color:var(--text-hi);}
+  .metric-hero{display:flex;align-items:baseline;gap:12px;margin-bottom:7px;}
+  .metric-hero h2{font-size:21px;font-weight:700;margin:0;letter-spacing:-0.02em;}
+  .metric-hero .big{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums;margin-left:auto;letter-spacing:-0.03em;}
+  .metric-def{font-size:13px;color:var(--text-mid);line-height:1.7;margin:0;}
+  .formula{font-size:12.5px;color:var(--blue);background:var(--blue-soft);border-radius:9px;
+    padding:10px 12px;line-height:1.6;margin-top:13px;font-weight:600;}
+  .comp-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-2);}
+  .comp-row:last-child{border-bottom:none;}
+  .comp-name{flex:0 0 124px;font-size:12.5px;font-weight:600;}
+  .comp-weight{flex:0 0 32px;font-size:11.5px;color:var(--text-low);text-align:right;}
+  .comp-num{flex:0 0 28px;text-align:right;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;}
+
+  .ev{padding:14px 0;border-bottom:1px solid var(--line-2);}
+  .ev:last-child{border-bottom:none;padding-bottom:0;}
+  .ev-head{display:flex;align-items:center;gap:6px;margin-bottom:9px;flex-wrap:wrap;}
+  .ev-when{font-size:11.5px;color:var(--text-low);font-variant-numeric:tabular-nums;}
+  .msg{padding:8px 11px;border-radius:9px;background:var(--panel-2);margin-bottom:5px;border-left:3px solid var(--line);}
+  .msg.reply{margin-left:18px;}
+  .msg.pos{border-left-color:var(--green);} .msg.neg{border-left-color:var(--red);}
+  .msg-meta{font-size:11.5px;color:var(--text-low);margin-bottom:3px;font-variant-numeric:tabular-nums;font-weight:600;}
+  .msg-text{font-size:13px;line-height:1.65;}
+  .ev-note{font-size:12.5px;color:var(--text-mid);line-height:1.7;margin-top:8px;}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(31,35,41,0.42);display:flex;align-items:flex-start;
+    justify-content:center;padding:40px 16px;overflow-y:auto;z-index:50;}
+  .modal{background:var(--panel);border-radius:16px;max-width:560px;width:100%;padding:22px 20px;
+    box-shadow:0 20px 48px rgba(16,24,40,0.18);}
+  .modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:6px;}
+  .modal-head h3{font-size:19px;font-weight:700;margin:0;}
+  .modal-close{background:none;border:none;color:var(--text-low);font-size:22px;cursor:pointer;line-height:1;padding:0;}
+  .modal-sub{font-size:12.5px;color:var(--text-mid);line-height:1.7;margin-bottom:16px;
+    padding-bottom:14px;border-bottom:1px solid var(--line);}
+
+  /* 홈에 얹는 추가 기능 카드 (부가 인사이트류) */
+  .soon-head{display:flex;align-items:center;gap:8px;margin:0 0 10px;flex-wrap:wrap;}
+  .soon-card .card-title{margin-bottom:6px;}
+  .soon-why{font-size:12px;color:var(--text-low);line-height:1.65;margin:0 0 14px;}
+  .soon-body{border-radius:12px;padding:14px;background:var(--panel-2);}
+  .kv{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:13px;}
+  .kv:last-child{border-bottom:none;}
+  .kv-k{color:var(--text-mid);} .kv-v{font-weight:700;font-variant-numeric:tabular-nums;}
+  .pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;
+    background:var(--blue-soft);color:var(--blue);margin:0 5px 5px 0;}
+  .sig{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-2);}
+  .sig:last-child{border-bottom:none;}
+  .sig-dot{flex:0 0 7px;height:7px;border-radius:50%;margin-top:6px;}
+  .sig-t{font-size:13px;font-weight:600;} .sig-d{font-size:12px;color:var(--text-mid);margin-top:2px;line-height:1.6;}
+  .bal{display:flex;height:26px;border-radius:8px;overflow:hidden;margin:6px 0 10px;}
+  .bal div{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;}
+
+  .axis-label{font-size:10px;fill:#98a0ae;}
+  .grid-line{stroke:#eef0f4;stroke-width:1;}
+  .cell{cursor:pointer;} .cell:hover{stroke:#1f2329;stroke-width:1.5;}
+  .bar-hit{cursor:pointer;} .bar-hit:hover{opacity:0.72;}
+  .legend{display:flex;gap:13px;flex-wrap:wrap;font-size:12px;color:var(--text-mid);margin-top:12px;}
+  .legend span{display:flex;align-items:center;gap:5px;}
+  .swatch{width:13px;height:3px;border-radius:2px;}
+  .quad-label{font-size:9.5px;fill:#b6bcc7;}
+  .note-box{font-size:11.5px;color:var(--text-mid);line-height:1.7;background:var(--panel-2);
+    border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-top:12px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand" onclick="go('intro')"><div class="logo"></div><div class="wordmark">CollaBrain</div></div>
+    <div class="daterange" id="dateRange"></div>
+  </div>
+  <div class="nav" id="nav"></div>
+  <div id="content"></div>
+</div>
+<div id="modalRoot"></div>
+
+<script>
+/* ============================================================
+   상수
+   ============================================================ */
+
+const MODEL = "claude-sonnet-5";
+const KEY_ENTRIES="collabrain_entries", KEY_COMMITMENTS="collabrain_commitments",
+      KEY_COLLEAGUES="collabrain_colleagues", KEY_SETTINGS="collabrain_settings",
+      KEY_TROPHIES="collabrain_trophies", KEY_CAREER_DOCS="collabrain_career_docs",
+      KEY_CAREER_MATERIALS="collabrain_career_materials";
+
+const METRICS = {
+  digitalization:{ label:"디지털화지수", color:"#3d6ef7",
+    def:"디지털 협업도구(Slack·Jira 등) 활용 커뮤니케이션 지수",
+    formula:"메시지수 40% + 메시지량 40% + 스레드 내 대화률 20%",
+    parts:[["메시지수",40],["메시지량",40],["스레드 내 대화률",20]] },
+  responsiveness:{ label:"응답 적시성", color:"#3fb98a",
+    def:"업무 요청·피드백에 대한 응답 여부 및 속도",
+    formula:"평균 응답시간 50% + 응답률(단독 멘션) 30% + 응답률(멀티 멘션) 20%",
+    parts:[["평균 응답시간",50],["응답률(단독 멘션)",30],["응답률(멀티 멘션)",20]] },
+  clarity:{ label:"의사전달 명확성", color:"#f0b429",
+    def:"업무 요청에 핵심내용 포함 여부 및 양식 적합성",
+    formula:"핵심정보 포함률 50% + 작성 양식 적합성 50%",
+    parts:[["핵심정보 포함률",50],["작성 양식 적합성",50]] },
+  initiative:{ label:"적극성", color:"#ef6b8a",
+    def:"이슈·문제사항에 대한 의견 발언 및 책임감",
+    formula:"의견 발언률 50% + 의견 주도성 50%",
+    parts:[["의견 발언률",50],["의견 주도성",50]] },
+  kindness:{ label:"친절도", color:"#f5883c",
+    def:"작성한 메시지 톤 유형(공격적·사무적·비꼬임 등)",
+    formula:"메시지톤 80% + 이모지 포함률 20%",
+    parts:[["메시지톤",80],["이모지 포함률",20]] }
+};
+const METRIC_KEYS = Object.keys(METRICS);
+const COMPOSITE_COLOR = "#545a66", BENCH_COLOR = "#b6bcc7";
+
+/* 도메인(주제) 대신 행위(그 메시지에서 뭘 했는가) 기준 4분류.
+   같은 주제를 얘기해도 조율만 했는지, 문제를 먼저 짚었는지, 결과물을 냈는지가 다르다. */
+const WORK_MODES = ["진행관리","문제 제기","명확화","실행·전달"];
+const MODE_DESC = {
+  "진행관리": "일정·담당자·진행상황을 확인하고 조율함",
+  "문제 제기": "남이 짚기 전에 리스크·예외를 먼저 꺼냄",
+  "명확화": "모호한 요청을 질문으로 구체화함",
+  "실행·전달": "결과물이나 결정을 만들어 공유함"
+};
+const MODE_COLORS = {"진행관리":"#3d6ef7","문제 제기":"#ef6b8a","명확화":"#f0b429","실행·전달":"#3fb98a"};
+const MODE_CODE = {"진행관리":"C","문제 제기":"I","명확화":"L","실행·전달":"D"};
+
+/* 설정에서 고르는 직함 — 동료 벤치마크를 추정할 때만 쓰인다(업무 행위 분류와는 별개). */
+const JOB_ROLES = ["개발","기획","디자인","PM"];
+const DAYS = ["월","화","수","목","금","토","일"];
+
+/* 16유형 = 4분면(부하×점수) × 4업무도메인 */
+const QUADRANTS = {
+  "히어로":     { code:"H", grad:"linear-gradient(135deg,#ffd89b,#f5a623)", desc:"업무량도 많고 협업 점수도 높은 상태" },
+  "하드 워커":   { code:"W", grad:"linear-gradient(135deg,#ffb3a7,#ef6b8a)", desc:"업무량은 많은데 점수는 보통인 상태" },
+  "스마트 워커": { code:"S", grad:"linear-gradient(135deg,#9fc4ff,#3d6ef7)", desc:"업무량은 적은데 점수는 높은 상태" },
+  "협업 단절":   { code:"Q", grad:"linear-gradient(135deg,#cfd4dd,#98a0ae)", desc:"업무량도 상호작용도 적은 상태" }
+};
+const QUAD_BY_CODE = Object.fromEntries(Object.entries(QUADRANTS).map(([k,v])=>[v.code,k]));
+
+/* 4분면(H/W/S/Q) × 주력 행위(C진행관리/I문제제기/L명확화/D실행전달) = 16유형 */
+const TYPES = {
+  HC:{e:"🎖",n:"판 돌리는 사령관",    l:"많이 주고받으면서 일정과 담당을 계속 맞춥니다."},
+  HI:{e:"🔥",n:"먼저 불 보는 사람",   l:"바쁜 와중에도 문제를 먼저 짚어냅니다."},
+  HL:{e:"🔍",n:"캐묻는 사람",         l:"바쁜 와중에도 애매한 건 짚고 넘어갑니다."},
+  HD:{e:"⚡",n:"질주하는 빌더",       l:"많이 치고 많이 만들어냅니다."},
+  WC:{e:"📮",n:"무한 중계기",         l:"메시지가 나를 거쳐 계속 흘러갑니다."},
+  WI:{e:"🚨",n:"경보기",              l:"일은 많은데 문제부터 눈에 띕니다."},
+  WL:{e:"❓",n:"되묻는 사람",         l:"일이 많다 보니 확인부터 하고 넘어갑니다."},
+  WD:{e:"🔨",n:"묵묵한 대장장이",     l:"손이 많이 가는데 티가 덜 나는 편입니다."},
+  SC:{e:"♟",n:"조용한 조율가",       l:"나서지 않는데 정리가 됩니다."},
+  SI:{e:"🔎",n:"정확히 짚는 사람",   l:"말은 적어도 짚을 건 짚습니다."},
+  SL:{e:"🧭",n:"질문으로 트는 사람", l:"몇 마디 질문으로 방향이 잡힙니다."},
+  SD:{e:"🎯",n:"한 방의 저격수",     l:"적게 말하고 정확히 꽂습니다."},
+  QC:{e:"📡",n:"원격 관제사",         l:"멀찍이서 상황을 지켜보는 중입니다."},
+  QI:{e:"🔦",n:"혼자 살피는 사람",   l:"가끔 나서는 말이 대개 문제 제기입니다."},
+  QL:{e:"🌀",n:"혼잣말로 정리하는 사람", l:"묻는 말이 대부분 확인하는 질문입니다."},
+  QD:{e:"🕳",n:"동굴 속 장인",       l:"깊게 파고 혼자 완성합니다."}
+};
+const TYPE_CODES = Object.keys(TYPES);
+
+const BENCH_DISCLAIMER = "동료 평균은 아직 진짜 데이터가 아닙니다. 비슷한 직무면 보통 이 정도라고 AI가 잡아둔 <strong>참고선</strong>이에요. 쓰는 사람이 쌓이면 실제 값으로 바꿉니다.";
+
+/* ============================================================
+   저장소 · 유틸
+   ============================================================ */
+
+/* Chrome은 file://로 연 페이지에서 localStorage를 막는다(SecurityError).
+   그럴 땐 메모리에 담아 이번 세션만이라도 정상 동작하게 하고, 화면에 알린다. */
+let storageOK = true, memStore = {};
+try {
+  const probe = "__collabrain_probe__";
+  localStorage.setItem(probe, "1"); localStorage.removeItem(probe);
+} catch(e){ storageOK = false; }
+
+function load(k,f){
+  try{
+    const r = storageOK ? localStorage.getItem(k) : (memStore[k] ?? null);
+    return r ? JSON.parse(r) : f;
+  }catch(e){ return f; }
+}
+function save(k,v){
+  const s = JSON.stringify(v);
+  try{
+    if(storageOK) localStorage.setItem(k, s); else memStore[k] = s;
+  }catch(e){ storageOK = false; memStore[k] = s; }
+}
+
+// 기록 순서는 "분석한 순서"가 아니라 "대화가 담고 있는 기간" 기준이다.
+const entryTime = e => new Date(e.periodEnd || e.date).getTime();
+const getEntries=()=>load(KEY_ENTRIES,[]).slice().sort((a,b)=>entryTime(a)-entryTime(b));
+const getCommitments=()=>load(KEY_COMMITMENTS,[]);
+const getColleagues=()=>load(KEY_COLLEAGUES,[]);
+const getSettings=()=>load(KEY_SETTINGS,{apiKey:"",selfName:"",jobRole:"",careerGoal:"",onboarded:false});
+const getTrophyStore=()=>load(KEY_TROPHIES,{earned:[],initialized:false});
+const getCareerDocs=()=>load(KEY_CAREER_DOCS,[]);
+const getCareerMaterials=()=>load(KEY_CAREER_MATERIALS,[]);
+const setEntries=v=>save(KEY_ENTRIES,v), setCommitments=v=>save(KEY_COMMITMENTS,v),
+      setColleagues=v=>save(KEY_COLLEAGUES,v), setSettings=v=>save(KEY_SETTINGS,v),
+      setTrophyStore=v=>save(KEY_TROPHIES,v), setCareerDocs=v=>save(KEY_CAREER_DOCS,v),
+      setCareerMaterials=v=>save(KEY_CAREER_MATERIALS,v);
+
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+const fmtTick=d=>new Date(d).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'});
+const daysAgo=s=>Math.floor((Date.now()-new Date(s).getTime())/86400000);
+const daysUntil=s=>Math.ceil((new Date(s).getTime()-Date.now())/86400000);
+const avgScore=sc=>Math.round(METRIC_KEYS.map(k=>sc?.[k]??0).reduce((a,b)=>a+b,0)/METRIC_KEYS.length);
+
+function entryLabel(e){
+  if(e.periodLabel) return e.periodLabel;
+  if(e.periodStart&&e.periodEnd) return `${fmtTick(e.periodStart)} ~ ${fmtTick(e.periodEnd)}`;
+  if(e.periodEnd) return fmtTick(e.periodEnd);
+  return `${fmtTick(e.date)} 분석`;
+}
+const entryTick=e=>e.periodEnd?fmtTick(e.periodEnd):fmtTick(e.date);
+
+function coverage(entries){
+  const wp=entries.filter(e=>e.periodStart&&e.periodEnd);
+  if(!wp.length) return `${entries.length}개 기간 기록`;
+  const s=new Date(Math.min(...wp.map(e=>+new Date(e.periodStart))));
+  const t=new Date(Math.max(...wp.map(e=>+new Date(e.periodEnd))));
+  const days=Math.round((t-s)/86400000)+1;
+  return `${fmtTick(s)} ~ ${fmtTick(t)} · ${days>=14?`약 ${Math.round(days/7)}주`:`${days}일`} 관찰`;
+}
+
+function deltaBadge(cur,prev){
+  if(prev===undefined||prev===null) return `<span class="d d-flat">신규</span>`;
+  const d=cur-prev;
+  if(d>0) return `<span class="d d-up"><i>↑</i>+${d}점</span>`;
+  if(d<0) return `<span class="d d-down"><i>↓</i>${d}점</span>`;
+  return `<span class="d d-flat">변동없음</span>`;
+}
+
+/* 유형 코드 — 4분면 + 가장 많이 한 행위에서 파생 */
+function leadMode(mix){
+  if(!mix) return null;
+  return WORK_MODES.reduce((a,b)=>(mix[b]||0)>(mix[a]||0)?b:a, WORK_MODES[0]);
+}
+function typeCode(e){
+  const q=QUADRANTS[e.type]?.code, d=MODE_CODE[leadMode(e.workMode)];
+  return (q&&d)?q+d:null;
+}
+/* 대표 유형 — 최근 3기간 최빈값 (동률이면 더 최근 것) */
+function representativeType(entries){
+  const recent=entries.slice(-3).map(typeCode).filter(Boolean);
+  if(!recent.length) return null;
+  const count={};
+  recent.forEach((c,i)=>{ count[c]=(count[c]||0)+1+i*0.01; });
+  return Object.keys(count).reduce((a,b)=>count[b]>count[a]?b:a);
+}
+function avatarHTML(code, sizeClass){
+  const t=TYPES[code]; if(!t) return "";
+  const grad=QUADRANTS[QUAD_BY_CODE[code[0]]]?.grad||"var(--line-2)";
+  // 이미지가 있으면 이미지, 없으면 이모지로 폴백한다.
+  return `<div class="avatar ${sizeClass}" style="background:${grad}">
+    <span class="avatar-emoji">${t.e}</span>
+    <img class="avatar-img" src="assets/types/${code}.png" alt=""
+         onerror="this.remove()"
+         onload="this.previousElementSibling.style.display='none'">
+  </div>`;
+}
+
+/* ============================================================
+   트로피 — 저장된 데이터만으로 판정 가능한 규칙
+   ============================================================ */
+
+const TROPHY_RULES = [
+  { id:"first-mirror", e:"🪞", n:"첫 거울", d:"처음으로 나를 들여다봤습니다.",
+    per:(e,i)=>i===0 },
+  { id:"steady-3", e:"📖", n:"세 번째 기록", d:"세 기간을 모았습니다. 이제 추이가 보입니다.",
+    per:(e,i)=>i===2 },
+  { id:"steady-6", e:"📚", n:"습관이 됐다", d:"여섯 기간을 모았습니다.",
+    per:(e,i)=>i===5 },
+  { id:"growth-spurt", e:"📈", n:"눈에 띄게 좋아짐", d:"한 축이 지난 기간보다 10점 넘게 올랐습니다.",
+    per:(e,i,prev)=>!!prev && METRIC_KEYS.some(k=>(e.scores?.[k]??0)-(prev.scores?.[k]??0)>=10) },
+  { id:"all-rounder", e:"⭐", n:"빈틈없음", d:"다섯 축 전부 70점을 넘겼습니다.",
+    per:e=>METRIC_KEYS.every(k=>(e.scores?.[k]??0)>=70) },
+  { id:"night-clear", e:"🌙", n:"칼퇴의 정석", d:"밤 10시 이후 보낸 메시지 0건.",
+    per:e=>e.hasTimestamps && (e.activity||[]).length>0 &&
+           !(e.activity||[]).some(a=>(a.hour>=22||a.hour<7)&&a.count>0) },
+  { id:"ahead", e:"🚀", n:"평균 위에서", d:"동료 평균을 세 축에서 넘었습니다.",
+    per:e=>!!e.benchmark && METRIC_KEYS.filter(k=>(e.scores?.[k]??0)>(e.benchmark[k]??0)).length>=3 },
+  { id:"collector-5",  e:"🗺", n:"유형 수집가",   d:"서로 다른 유형 5가지를 만났습니다.",  dex:5 },
+  { id:"collector-10", e:"🧭", n:"베테랑 수집가", d:"서로 다른 유형 10가지를 만났습니다.", dex:10 },
+  { id:"collector-16", e:"👑", n:"도감 완성",     d:"16가지를 전부 만났습니다. 대단하네요.", dex:16 },
+  { id:"promise-keeper", e:"🤝", n:"말한 대로", d:"동료에게 한 약속을 지켰습니다.",
+    cmt:c=>c.source==="self_promise" && c.status==="done" },
+  { id:"experimenter", e:"🧪", n:"일단 해봄", d:"제안받은 걸 실제로 해봤습니다.",
+    cmt:c=>c.source==="system_experiment" && c.status==="done" }
+];
+
+/* 매번 전체를 재평가한다. 이미 획득한 것은 유지, 신규만 추가.
+   규칙을 나중에 추가해도 과거 기록까지 자동 반영된다. */
+function evaluateTrophies(){
+  const store=getTrophyStore();
+  const first=!store.initialized;
+  const have=new Set(store.earned.map(t=>t.id));
+  const entries=getEntries(), cms=getCommitments();
+  const fresh=[];
+
+  const award=(rule, when, where)=>{
+    if(have.has(rule.id)) return;
+    have.add(rule.id);
+    const t={ id:rule.id, earnedAt:when||new Date().toISOString(), where:where||"",
+              retro:first, seen:first };
+    store.earned.push(t);
+    if(!first) fresh.push(rule);
+  };
+
+  const seenCodes=new Set();
+  entries.forEach((e,i)=>{
+    const when=e.periodEnd||e.date, where=entryLabel(e), prev=i>0?entries[i-1]:null;
+    const c=typeCode(e); if(c) seenCodes.add(c);
+    for(const r of TROPHY_RULES){
+      if(r.per && r.per(e,i,prev)) award(r,when,where);
+      if(r.dex && seenCodes.size>=r.dex) award(r,when,where);
+    }
+  });
+  for(const r of TROPHY_RULES){
+    if(!r.cmt) continue;
+    const hit=cms.find(r.cmt);
+    if(hit) award(r, hit.completedAt||hit.createdAt, hit.title);
+  }
+
+  store.initialized=true;
+  setTrophyStore(store);
+  return fresh;
+}
+const unseenTrophies=()=>getTrophyStore().earned.filter(t=>!t.seen);
+function markTrophiesSeen(){
+  const s=getTrophyStore(); s.earned.forEach(t=>t.seen=true); setTrophyStore(s); render();
+}
+
+/* ============================================================
+   차트
+   ============================================================ */
+
+function sparkline(entries){
+  const W=620,H=88,P={l:8,r:8,t:12,b:16};
+  const iw=W-P.l-P.r, ih=H-P.t-P.b, n=entries.length;
+  const vals=entries.map(e=>avgScore(e.scores));
+  // 0~100 고정이면 점수가 높을 때 선이 위쪽에 붙어버려서, 데이터 범위에 맞춰 늘린다.
+  const lo=Math.max(0, Math.min(...vals)-6), hi=Math.min(100, Math.max(...vals)+6);
+  const span=Math.max(hi-lo, 10);
+  const x=i=>P.l+(n===1?iw/2:i*iw/(n-1));
+  const y=v=>P.t+ih-(clamp(v,lo,hi)-lo)/span*ih;
+  const pts=vals.map((v,i)=>`${x(i)},${y(v)}`).join(" ");
+  const dots=vals.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${i===n-1?4.5:3}"
+    fill="${i===n-1?"#3d6ef7":"#c3d4fd"}"><title>${entryLabel(entries[i])} · ${v}점</title></circle>`).join("");
+  // 점수 차이가 작으면 선이 거의 평평해 보이는데, 호버 툴팁만으론 숫자를 알 수 없다
+  // (터치 기기에선 호버 자체가 없다). 그래서 점 옆에 숫자를 항상 보이게 적어둔다.
+  const labels=vals.map((v,i)=>`<text x="${x(i)}" y="${y(v)-9}" text-anchor="middle" class="axis-label"
+    style="${i===n-1?"font-weight:700;fill:#3d6ef7;font-size:11px":""}">${v}</text>`).join("");
+  return `<div class="chart-scroll"><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px">
+    ${n>1?`<polyline points="${pts}" fill="none" stroke="#3d6ef7" stroke-width="2" stroke-linejoin="round"/>`:""}${dots}${labels}
+    <text x="${P.l}" y="${H-3}" class="axis-label">${entryTick(entries[0])}</text>
+    ${n>1?`<text x="${W-P.r}" y="${H-3}" text-anchor="end" class="axis-label">${entryTick(entries[n-1])}</text>`:""}
+  </svg></div>`;
+}
+
+function multiTrendChart(entries, hidden){
+  const W=620,H=260,P={l:32,r:14,t:16,b:30};
+  const iw=W-P.l-P.r, ih=H-P.t-P.b, n=entries.length;
+  const x=i=>P.l+(n===1?iw/2:i*iw/(n-1));
+  const y=v=>P.t+ih-clamp(v,0,100)/100*ih;
+  const grid=[0,20,40,60,80,100].map(v=>
+    `<line x1="${P.l}" y1="${y(v)}" x2="${W-P.r}" y2="${y(v)}" class="grid-line"/>
+     <text x="${P.l-6}" y="${y(v)+3}" text-anchor="end" class="axis-label">${v}</text>`).join("");
+  const series=[{key:"composite",label:"종합",color:COMPOSITE_COLOR,w:2.8},
+    ...METRIC_KEYS.map(k=>({key:k,label:METRICS[k].label,color:METRICS[k].color,w:1.6}))];
+  const lines=series.filter(s=>!hidden.includes(s.key)).map(s=>{
+    const vals=entries.map(e=>s.key==="composite"?avgScore(e.scores):(e.scores?.[s.key]??0));
+    const pts=vals.map((v,i)=>`${x(i)},${y(v)}`).join(" ");
+    const dots=vals.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${s.w>2?4:3}" fill="${s.color}"><title>${s.label} ${v}점</title></circle>`).join("");
+    return `<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="${s.w}" stroke-linejoin="round"/>${dots}`;
+  }).join("");
+  const ticks=entries.map((e,i)=>`<text x="${x(i)}" y="${H-9}" text-anchor="middle" class="axis-label">${entryTick(e)}</text>`).join("");
+  const legend=series.map(s=>{
+    const off=hidden.includes(s.key);
+    return `<span onclick="toggleSeries('${s.key}')" style="cursor:pointer;opacity:${off?0.32:1}">
+      <i class="swatch" style="background:${s.color};height:${s.key==="composite"?4:3}px"></i>${s.label}</span>`;}).join("");
+  return `<div class="chart-scroll"><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px">
+    ${grid}${lines}${ticks}</svg></div><div class="legend">${legend}</div>
+    <div class="card-note">${n===1?"기간이 하나라 아직 선이 없습니다. 하나만 더 넣으면 이어집니다."
+      :"범례를 누르면 선이 켜지고 꺼집니다."}</div>`;
+}
+
+function radarChart(latest, prev, bench){
+  const W=480,H=310,cx=W/2,cy=H/2+4,R=100,n=METRIC_KEYS.length;
+  const pt=(i,v)=>{ const a=-Math.PI/2+i*2*Math.PI/n, r=R*clamp(v,0,100)/100;
+    return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; };
+  const poly=sc=>METRIC_KEYS.map((k,i)=>pt(i,sc?.[k]??0).join(",")).join(" ");
+  const rings=[25,50,75,100].map(p=>`<polygon points="${METRIC_KEYS.map((k,i)=>pt(i,p).join(",")).join(" ")}" fill="none" class="grid-line"/>`).join("");
+  const spokes=METRIC_KEYS.map((k,i)=>{const[x,y]=pt(i,100);return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" class="grid-line"/>`;}).join("");
+  const labels=METRIC_KEYS.map((k,i)=>{const[x,y]=pt(i,126);
+    const anc=Math.abs(x-cx)<12?"middle":(x>cx?"start":"end");
+    return `<text x="${x}" y="${y+3}" text-anchor="${anc}" class="axis-label">${METRICS[k].label}</text>`;}).join("");
+  const benchPoly=bench?`<polygon points="${poly(bench)}" fill="none" stroke="${BENCH_COLOR}" stroke-width="1.6" stroke-dasharray="5 3"/>`:"";
+  const prevPoly=prev?`<polygon points="${poly(prev.scores)}" fill="rgba(84,90,102,0.06)" stroke="#c7ccd4" stroke-width="1.4"/>`:"";
+  const dots=METRIC_KEYS.map((k,i)=>{const[x,y]=pt(i,latest.scores?.[k]??0);return `<circle cx="${x}" cy="${y}" r="3.5" fill="#3d6ef7"/>`;}).join("");
+  return `<div class="chart-scroll"><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px">
+    ${rings}${spokes}${benchPoly}${prevPoly}
+    <polygon points="${poly(latest.scores)}" fill="rgba(61,110,247,0.16)" stroke="#3d6ef7" stroke-width="2"/>
+    ${dots}${labels}</svg></div>
+    <div class="legend"><span><i class="swatch" style="background:#3d6ef7"></i>나</span>
+    ${prev?`<span><i class="swatch" style="background:#c7ccd4"></i>지난 기간</span>`:""}
+    ${bench?`<span><i class="swatch" style="background:${BENCH_COLOR}"></i>동료 평균(추정)</span>`:""}</div>`;
+}
+
+function componentBars(entries, key){
+  const parts=METRICS[key].parts, cols=["#3d6ef7","#3fb98a","#f0b429"];
+  const W=620,H=250,P={l:32,r:14,t:16,b:32};
+  const iw=W-P.l-P.r, ih=H-P.t-P.b, n=entries.length;
+  const step=iw/n, gw=Math.min(step-16, 24*parts.length), bw=gw/parts.length-3;
+  const y=v=>P.t+ih-clamp(v,0,100)/100*ih;
+  const grid=[0,25,50,75,100].map(v=>
+    `<line x1="${P.l}" y1="${y(v)}" x2="${W-P.r}" y2="${y(v)}" class="grid-line"/>
+     <text x="${P.l-6}" y="${y(v)+3}" text-anchor="end" class="axis-label">${v}</text>`).join("");
+  const bars=entries.map((e,i)=>{
+    const bd=e.scoreBreakdown?.[key], gx=P.l+step*i+step/2-gw/2;
+    return parts.map((p,j)=>{
+      const v=bd?.[j]?.value??0, bx=gx+j*(bw+3), by=y(v), bh=P.t+ih-by;
+      return `<rect class="bar-hit" x="${bx}" y="${by}" width="${bw}" height="${Math.max(bh,1)}" rx="3"
+        fill="${cols[j%cols.length]}" onclick="openCause('${key}',${i})"><title>${entryLabel(e)} · ${esc(p[0])} ${v}점</title></rect>`;
+    }).join("")+`<text x="${gx+gw/2}" y="${H-10}" text-anchor="middle" class="axis-label">${entryTick(e)}</text>`;
+  }).join("");
+  const legend=parts.map((p,j)=>`<span><i class="swatch" style="background:${cols[j%cols.length]}"></i>${p[0]} <span style="color:var(--text-low)">${p[1]}%</span></span>`).join("");
+  return `<div class="chart-scroll"><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px">${grid}${bars}</svg></div>
+    <div class="legend">${legend}</div><div class="card-note">막대를 눌러보세요. 그 기간의 대화가 나옵니다.</div>`;
+}
+
+function heroMap(entries){
+  const W=600,H=340,P={l:40,r:20,t:18,b:34};
+  const iw=W-P.l-P.r, ih=H-P.t-P.b;
+  const x=v=>P.l+clamp(v,0,100)/100*iw, y=v=>P.t+ih-clamp(v,0,100)/100*ih;
+  const pts=entries.map(e=>({x:x(e.load??0),y:y(avgScore(e.scores)),e}));
+  const trail=pts.length>1?`<polyline points="${pts.map(p=>`${p.x},${p.y}`).join(" ")}" fill="none" stroke="#c7ccd4" stroke-width="1.5" stroke-dasharray="4 3"/>`:"";
+  const dots=pts.map((p,i)=>{const last=i===pts.length-1;
+    return `<circle cx="${p.x}" cy="${p.y}" r="${last?7:4.5}" fill="${last?"#3d6ef7":"#c7ccd4"}"
+      stroke="#fff" stroke-width="${last?2.5:1.5}"><title>${entryLabel(p.e)} · ${esc(p.e.type||"")}</title></circle>`;}).join("");
+  return `<div class="chart-scroll"><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px">
+    <rect x="${P.l}" y="${P.t}" width="${iw}" height="${ih}" fill="#fafbfc" rx="8"/>
+    <line x1="${x(50)}" y1="${P.t}" x2="${x(50)}" y2="${P.t+ih}" class="grid-line" stroke-dasharray="3 3"/>
+    <line x1="${P.l}" y1="${y(65)}" x2="${W-P.r}" y2="${y(65)}" class="grid-line" stroke-dasharray="3 3"/>
+    <text x="${P.l+10}" y="${P.t+18}" class="quad-label">스마트 워커</text>
+    <text x="${W-P.r-10}" y="${P.t+18}" text-anchor="end" class="quad-label">히어로</text>
+    <text x="${P.l+10}" y="${P.t+ih-9}" class="quad-label">협업 단절</text>
+    <text x="${W-P.r-10}" y="${P.t+ih-9}" text-anchor="end" class="quad-label">하드 워커</text>
+    ${trail}${dots}
+    <text x="${P.l+iw/2}" y="${H-8}" text-anchor="middle" class="axis-label">부하 →</text>
+    <text x="12" y="${P.t+ih/2}" text-anchor="middle" class="axis-label" transform="rotate(-90 12 ${P.t+ih/2})">종합점수 →</text>
+  </svg></div>`;
+}
+
+function heatmap(activity, entryIdx){
+  const cw=20,ch=20,g=3,L=28,T=18;
+  const W=L+24*(cw+g), H=T+7*(ch+g)+6;
+  const max=Math.max(1,...activity.map(a=>a.count||0));
+  const cells=[];
+  for(let d=0;d<7;d++) for(let h=0;h<24;h++){
+    const a=activity.find(z=>z.day===DAYS[d]&&z.hour===h);
+    const cnt=a?.count||0, t=cnt/max, night=(h>=22||h<7);
+    const base=night?"239,107,138":"63,185,138";
+    const fill=cnt===0?"#f2f4f7":`rgba(${base},${0.16+t*0.78})`;
+    const tip=cnt===0?`${DAYS[d]} ${h}시 · 데이터 없음`
+      :`${DAYS[d]} ${h}시 · 메시지 ${cnt}건${a.score!=null?` · 점수 ${a.score}`:""}`;
+    cells.push(`<rect class="cell" x="${L+h*(cw+g)}" y="${T+d*(ch+g)}" width="${cw}" height="${ch}" rx="4" fill="${fill}"
+      ${cnt?`onclick="openHourCause(${entryIdx},'${DAYS[d]}',${h})"`:""}><title>${tip}</title></rect>`);
+  }
+  const dayL=DAYS.map((d,i)=>`<text x="${L-6}" y="${T+i*(ch+g)+14}" text-anchor="end" class="axis-label">${d}</text>`).join("");
+  const hourL=[0,3,6,9,12,15,18,21,23].map(h=>`<text x="${L+h*(cw+g)+cw/2}" y="${T-6}" text-anchor="middle" class="axis-label">${h}</text>`).join("");
+  return `<div class="chart-scroll"><svg viewBox="0 0 ${W} ${H}" width="${W}" style="min-width:${W}px">
+    ${cells.join("")}${dayL}${hourL}</svg></div>
+    <div class="legend"><span><i class="swatch" style="background:rgba(63,185,138,0.9)"></i>업무 시간</span>
+      <span><i class="swatch" style="background:rgba(239,107,138,0.9)"></i>이른 아침·심야 (22~7시)</span></div>
+    <div class="card-note">칸을 눌러보세요. 그때 무슨 대화였는지 나옵니다.</div>`;
+}
+
+function mixTrend(entries){
+  const W=620,H=200,P={l:10,r:10,t:12,b:28};
+  const iw=W-P.l-P.r, ih=H-P.t-P.b, n=entries.length;
+  const step=iw/n, bw=Math.min(52,step-14);
+  const bars=entries.map((e,i)=>{
+    const cx=P.l+step*i+step/2-bw/2; let acc=0;
+    return WORK_MODES.map(m=>{
+      const v=e.workMode?.[m]||0, h=ih*v/100, yy=P.t+ih-acc-h; acc+=h;
+      return v>0?`<rect x="${cx}" y="${yy}" width="${bw}" height="${h}" fill="${MODE_COLORS[m]}"><title>${entryLabel(e)} · ${m} ${v}%</title></rect>`:"";
+    }).join("")+`<text x="${cx+bw/2}" y="${H-9}" text-anchor="middle" class="axis-label">${entryTick(e)}</text>`;
+  }).join("");
+  return `<div class="chart-scroll"><svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px">${bars}</svg></div>
+    <div class="legend">${WORK_MODES.map(m=>`<span><i class="swatch" style="background:${MODE_COLORS[m]}"></i>${m}</span>`).join("")}</div>`;
+}
+
+/* ============================================================
+   프롬프트 · 스키마
+   ============================================================ */
+
+function buildSystemPrompt(s){
+  const role = s.jobRole ? `본인의 공식 직무는 "${s.jobRole}"입니다.` : `본인의 공식 직무는 입력되지 않았습니다.`;
+  return `당신은 개인의 Slack 협업 데이터를 분석해 "나의 상태"를 알려주는 도구입니다.
+
+입력된 대화에서 화자를 구분하세요. "${s.selfName}"로 표시된 발화가 본인입니다.
+나머지 사람은 실명 그대로 유지하세요 (익명화하지 않음 — 본인만 보는 개인용 기록입니다).
+${role}
+
+## 0. 분석 기간 (period)
+이 분석의 단위는 "분석을 실행한 시각"이 아니라 **대화가 실제로 담고 있는 기간**입니다.
+대화의 날짜·타임스탬프에서 가장 이른 시점과 가장 늦은 시점을 찾아
+periodStart / periodEnd를 ISO 날짜(YYYY-MM-DD)로 반환하세요. 연도가 없으면 올해로 간주합니다.
+날짜를 전혀 알 수 없으면 세 필드 모두 빈 문자열. periodLabel은 사람이 읽는 형식("7월 27일 ~ 7월 31일").
+
+## 1. 채점 (본인 발화 기준, 각 0~100)
+구성요소를 각각 0~100으로 평가한 뒤 가중합하세요. 감으로 총점을 매기지 말고
+scoreBreakdown에 구성요소 점수를 반드시 함께 반환하세요.
+
+- digitalization = 메시지수 40% + 메시지량 40% + 스레드 내 대화률 20%
+- responsiveness = 평균 응답시간 50% + 응답률(단독 멘션) 30% + 응답률(멀티 멘션) 20%
+- clarity = 핵심정보 포함률 50% + 작성 양식 적합성 50%
+- initiative = 의견 발언률 50% + 의견 주도성 50%
+- kindness = 메시지톤 80% + 이모지 포함률 20%
+
+scoreBreakdown의 항목 순서·이름·가중치는 위와 정확히 일치해야 하며,
+scores 값은 그 구성요소들의 가중합과 일치해야 합니다.
+기간 길이에 따라 절대량이 달라지므로 **기간 길이로 정규화**해서 채점하세요.
+3일치와 2주치가 같은 잣대로 비교될 수 있어야 합니다.
+타임스탬프가 없어 평균 응답시간을 계산할 수 없으면 hasTimestamps를 false로 하고
+responsiveness는 응답률 항목만으로 100점 만점 환산하세요.
+
+## 2. 동료 벤치마크 (benchmark)
+같은 직무·비슷한 업무 성격의 지식노동자에게서 **일반적으로 관찰되는 수준**을
+5개 지표 각각 0~100으로 추정하세요. 실제 집계 데이터가 아니라 추정 참고선입니다.
+benchmarkBasis에 무엇을 근거로 추정했는지 1문장. 본인 점수를 베끼지 말고 독립적으로 제시하세요.
+
+## 3. 근거 (evidence) — 6~12개
+각 점수의 근거가 된 **실제 대화 원문**을 인용하세요. 이 앱의 핵심 기능입니다.
+- metric / polarity(positive|negative)
+- speaker, at, quote : 근거가 되는 본문 발화 (원문 그대로, 요약·각색 금지, 140자 이내)
+- contextSpeaker, contextAt, contextQuote : 그 발화를 유발한 **선행 발화**(요청·질문).
+  응답 적시성처럼 요청→응답 쌍이 있으면 반드시 채우세요. 없으면 세 필드 모두 빈 문자열.
+- elapsed : 선행 발화와의 간격("39분","2시간 38분","무응답"). 없으면 빈 문자열.
+- note : 왜 이 대화가 그 지표의 근거인지 1문장
+- day / hour : 근거 발화의 요일("월"~"일")과 시(0~23). 타임스탬프 없으면 day는 빈 문자열, hour는 -1.
+서로 다른 지표를 최소 3개 이상 다루세요.
+
+## 4. 인사이트 (insights) — 4~6개
+관찰된 사실을 한 문장씩. polarity(positive|negative)와 text. 숫자를 근거로 구체적으로.
+
+## 5. 개선 제안 (improvements) — 1~3개
+가장 낮거나 가장 크게 하락한 지표부터. metric / problem(한 문장) /
+causes(원인 2~3개) / actions(개선방향 2~3개, 데이터로 관측 가능한 행동만).
+
+## 6. 시간대별 활동 (activity) — 최대 40개
+본인 발화를 요일×시간 버킷으로 집계. day, hour(0~23), count, score(0~100).
+타임스탬프가 없으면 빈 배열.
+
+## 7. 부하 (load, 0~100) = 직접 업무(발신량) + 읽기 업무(수신량). 기간 길이로 정규화.
+
+## 8. 업무 유형 — "스마트 워커"(부하↓·점수↑) / "히어로"(부하↑·점수↑) /
+   "하드 워커"(부하↑·점수 보통) / "협업 단절"(부하↓·상호작용 적음)
+
+## 9. 업무 행위 구성 (workMode) — 합 100
+본인 메시지가 **무슨 주제**였는지가 아니라 **그 메시지에서 무엇을 했는지**로 분류하세요.
+같은 기획 얘기를 해도 조율만 했는지, 문제를 먼저 짚었는지가 다릅니다.
+- 진행관리: 일정·담당자·진행상황을 확인하고 조율함 (예: "QA 인력은 누가 붙나요?")
+- 문제 제기: 남이 짚기 전에 리스크·예외·이슈를 먼저 꺼냄 (예: "결과가 0건이면 어떻게 보여줄까요?")
+- 명확화: 모호한 요청을 질문으로 구체화함 (예: "1000원 단위로 가면 될까요?")
+- 실행·전달: 결과물이나 결정을 만들어 공유함 (예: "스펙 문서 v2 올렸습니다")
+
+## 10. Commitment (최대 2개)
+- "system_experiment": 데이터로 관측 가능한 행동 제안 1개 (마음가짐·태도 금지)
+- "self_promise": 본인이 대화 중 실제로 한 약속. deadline은 ISO 날짜, 대상자는 relatedColleague
+- scriptLine: 그 행동을 실제로 할 때 Slack에 그대로 복사해서 쓸 수 있는 한 문장 예시.
+  "~하려고 노력하겠습니다" 같은 다짐문이 아니라 실제 발화 문장으로 ("이 부분이 걸리는 게 있는데, 확인 가능하실까요?").
+
+## 11. 동료 관찰 (colleagues) — 동료별 서술형 관찰 1~2개. 점수 금지.
+
+## 톤 원칙
+사람을 진단·단정하지 말고 관찰된 패턴만 서술. 서열화 표현 금지.
+narrative는 따뜻하고 관찰적인 1~2문장.
+selfPerceptionNote는 본인 인식과 workMode의 차이를 1문장으로. 차이 없으면 빈 문자열.`;
+}
+
+const strArr={ type:"array", items:{ type:"string" } };
+const intMap=keys=>({ type:"object", properties:Object.fromEntries(keys.map(k=>[k,{type:"integer"}])),
+  required:keys, additionalProperties:false });
+
+const OUTPUT_SCHEMA = {
+  type:"object",
+  properties:{
+    periodStart:{type:"string"}, periodEnd:{type:"string"}, periodLabel:{type:"string"},
+    type:{ type:"string", enum:Object.keys(QUADRANTS) },
+    typeReason:{ type:"string" }, load:{ type:"integer" },
+    scores: intMap(METRIC_KEYS), benchmark: intMap(METRIC_KEYS), benchmarkBasis:{ type:"string" },
+    scoreBreakdown:{ type:"object",
+      properties:Object.fromEntries(METRIC_KEYS.map(k=>[k,{ type:"array", items:{ type:"object",
+        properties:{ name:{type:"string"}, value:{type:"integer"}, weight:{type:"integer"} },
+        required:["name","value","weight"], additionalProperties:false }}])),
+      required:METRIC_KEYS, additionalProperties:false },
+    evidence:{ type:"array", items:{ type:"object", properties:{
+      metric:{ type:"string", enum:METRIC_KEYS },
+      polarity:{ type:"string", enum:["positive","negative"] },
+      speaker:{type:"string"}, at:{type:"string"}, quote:{type:"string"},
+      contextSpeaker:{type:"string"}, contextAt:{type:"string"}, contextQuote:{type:"string"},
+      elapsed:{type:"string"}, note:{type:"string"}, day:{type:"string"}, hour:{type:"integer"} },
+      required:["metric","polarity","speaker","at","quote","contextSpeaker","contextAt","contextQuote","elapsed","note","day","hour"],
+      additionalProperties:false }},
+    insights:{ type:"array", items:{ type:"object", properties:{
+      polarity:{ type:"string", enum:["positive","negative"] }, text:{type:"string"} },
+      required:["polarity","text"], additionalProperties:false }},
+    improvements:{ type:"array", items:{ type:"object", properties:{
+      metric:{ type:"string", enum:METRIC_KEYS }, problem:{type:"string"}, causes:strArr, actions:strArr },
+      required:["metric","problem","causes","actions"], additionalProperties:false }},
+    activity:{ type:"array", items:{ type:"object", properties:{
+      day:{ type:"string", enum:DAYS }, hour:{type:"integer"}, count:{type:"integer"}, score:{type:"integer"} },
+      required:["day","hour","count","score"], additionalProperties:false }},
+    workMode: intMap(WORK_MODES), hasTimestamps:{ type:"boolean" },
+    narrative:{ type:"string" }, whyThisMatters:{ type:"string" }, selfPerceptionNote:{ type:"string" },
+    commitments:{ type:"array", items:{ type:"object", properties:{
+      source:{ type:"string", enum:["system_experiment","self_promise"] },
+      title:{type:"string"}, description:{type:"string"}, scriptLine:{type:"string"},
+      deadline:{ anyOf:[{type:"string"},{type:"null"}] },
+      relatedColleague:{ anyOf:[{type:"string"},{type:"null"}] } },
+      required:["source","title","description","scriptLine","deadline","relatedColleague"], additionalProperties:false }},
+    colleagues:{ type:"array", items:{ type:"object", properties:{ name:{type:"string"}, patterns:strArr },
+      required:["name","patterns"], additionalProperties:false }}
+  },
+  required:["periodStart","periodEnd","periodLabel","type","typeReason","load","scores","benchmark",
+            "benchmarkBasis","scoreBreakdown","evidence","insights","improvements","activity","workMode",
+            "hasTimestamps","narrative","whyThisMatters","selfPerceptionNote","commitments","colleagues"],
+  additionalProperties:false
+};
+
+/* ============================================================
+   API
+   ============================================================ */
+
+async function postClaude(settings, system, userPrompt, schema, maxTokens){
+  const res=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{ "content-type":"application/json", "x-api-key":settings.apiKey,
+      "anthropic-version":"2023-06-01",
+      // 브라우저에서 api.anthropic.com을 직접 호출하기 위한 opt-in 헤더 (프록시 불필요)
+      "anthropic-dangerous-direct-browser-access":"true" },
+    body:JSON.stringify({ model:MODEL, max_tokens:maxTokens,
+      output_config:{ effort:"medium", format:{ type:"json_schema", schema } },
+      system, messages:[{ role:"user", content:userPrompt }] })
+  });
+  if(!res.ok){
+    let detail=""; try{ detail=(await res.json()).error?.message||""; }catch(e){}
+    if(res.status===401) throw new Error("API 키가 안 맞아요. 설정에서 다시 확인해주세요.");
+    if(res.status===429) throw new Error("잠깐 몰렸네요. 조금 뒤에 다시 눌러주세요.");
+    throw new Error(`API 오류 ${res.status}${detail?" · "+detail:""}`);
+  }
+  const data=await res.json();
+  if(data.stop_reason==="refusal") throw new Error("이 요청은 처리할 수 없다는 답이 왔어요.");
+  if(data.stop_reason==="max_tokens") throw new Error("내용이 길어서 답이 잘렸어요. 조금 줄여서 다시 해주세요.");
+  const text=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
+  if(!text.trim()) throw new Error("답이 비어서 왔어요. 다시 한 번 눌러주세요.");
+  try{ return JSON.parse(text); }catch(e){ return JSON.parse(text.replace(/```json|```/g,"").trim()); }
+}
+
+async function callClaude(settings, blocks, selfPerception){
+  const parts=blocks.map((b,i)=>`--- ${b.kind==="thread"?`스레드 ${i+1}`:`채널 대화 ${i+1}`} ---\n${b.text}`);
+  let userPrompt=`다음은 내 Slack 대화입니다.\n\n${parts.join("\n\n")}`;
+  if(selfPerception) userPrompt+=`\n\n내가 생각하는 이 기간의 주요 업무: ${selfPerception}`;
+  return postClaude(settings, buildSystemPrompt(settings), userPrompt, OUTPUT_SCHEMA, 20000);
+}
+
+/* ============================================================
+   커리어 문서 생성 — 근거(evidence)를 원문 그대로 쓰지 않고
+   역량 서술로 추상화해서 이력서·자소서·면접 답변 초안을 만든다.
+   ============================================================ */
+
+const DOC_TYPES = {
+  resume:{ label:"이력서 항목" },
+  cover:{ label:"자소서 답변" },
+  interview:{ label:"면접 예상 답변" },
+  growth:{ label:"성장 서사" }
+};
+
+const CAREER_DOC_SCHEMA = {
+  type:"object",
+  properties:{
+    title:{ type:"string" }, content:{ type:"string" },
+    highlights:{ type:"array", items:{ type:"string" } }
+  },
+  required:["title","content","highlights"], additionalProperties:false
+};
+
+function careerDocSystemPrompt(){
+  return `당신은 사용자의 실제 Slack 협업 기록을 바탕으로 이력서·자기소개서·면접 답변 초안을 써주는 도우미입니다.
+반드시 지키세요:
+1. 제공된 근거(요약된 narrative·insights)에 실제로 있는 내용만 씁니다. 없는 성과를 지어내지 않습니다.
+2. Slack 원문을 그대로 인용하지 않습니다. "예외 케이스를 먼저 짚어 리스크를 줄인 사례가 있습니다"처럼 역량 서술로 추상화하고, 동료 이름·제품명·사내 용어는 넣지 않습니다.
+3. 과장하지 않습니다. 근거가 약하면 약한 대로 쓰고, 없으면 그 항목은 뺍니다.
+4. 실제 채용 서류에 바로 쓸 수 있는 자연스러운 한국어 문어체로 씁니다.`;
+}
+
+const CAREER_CONTEXT_MAX_PERIODS=12; // 기간이 쌓일수록 매 생성마다 보내는 토큰(=비용)이 무한히 늘지 않도록 최근 것만 쓴다.
+
+function buildCareerContext(entries, goal, materials){
+  const capped=entries.slice(-CAREER_CONTEXT_MAX_PERIODS);
+  const lines=capped.map(e=>{
+    const pos=(e.insights||[]).filter(i=>i.polarity==="positive").map(i=>i.text);
+    return `[${entryLabel(e)}] ${e.narrative||""}\n강점 신호: ${pos.join(" / ")||"없음"}`;
+  });
+  const matBlock=(materials&&materials.length)
+    ? `\n\n사용자가 직접 추가한 참고 자료 (Slack 로그로 안 잡히는 것):\n${
+        materials.map(m=>`[${m.title}]\n${m.content}`).join("\n\n")}`
+    : "";
+  const periodNote=entries.length>capped.length?`최근 ${capped.length}개 기간, 전체 ${entries.length}개 중`:`${capped.length}개 기간`;
+  return (goal?`사용자가 밝힌 목표: ${goal}\n\n`:"")+
+    `누적된 협업 기록 (${periodNote}):\n${lines.join("\n\n")}${matBlock}`;
+}
+
+/* "부족한 점을 어떻게 극복했는지" 류 질문의 재료 — 검증된(자기보고 아닌) 변화 시도만 쓴다. */
+function buildGrowthContext(){
+  const verified=getCommitments().filter(c=>c.verdict);
+  if(!verified.length) return null;
+  const lines=verified.map(c=>{
+    const outcome=c.verdict==="changed"?"실제로 바뀜":c.verdict==="partial"?"부분적으로 바뀜":"아직 그대로";
+    return `[다짐] ${c.title} — ${c.description}\n[확인 결과: ${outcome}] ${c.verifyNote||""}`;
+  });
+  return `검증된 행동 변화 시도 목록 (자기보고가 아니라 이후 기록과 대조해서 확인한 것):\n${lines.join("\n\n")}`;
+}
+
+async function generateCareerDoc(kind, extra){
+  const settings=getSettings(), entries=getEntries();
+  if(kind==="growth" && !buildGrowthContext())
+    throw new Error("아직 검증된 다짐이 없어요. '해볼 것'에서 다짐을 진행하고, 다음 기간을 분석하면 자동으로 확인됩니다.");
+  const ctx=buildCareerContext(entries, settings.careerGoal, getCareerMaterials());
+  const growthBlock=kind==="growth"?`\n\n${buildGrowthContext()}`:"";
+  let ask="";
+  if(kind==="resume") ask=`이력서에 쓸 성과 항목을 3~5개, STAR(상황-과제-행동-결과) 형식으로 한 줄씩 뽑아주세요. content에는 항목마다 줄바꿈으로 구분해 적어주세요.`;
+  if(kind==="cover") ask=`아래 회사의 자기소개서 문항에 대한 답변 초안을 800자 내외로 써주세요.\n회사: ${extra.company||"(미입력)"}\n문항: ${extra.question}`;
+  if(kind==="interview") ask=`다음 예상 면접 질문에 대한 답변 초안을 실제 사례를 근거로 300자 내외로 써주세요.\n질문: ${extra.question||"협업할 때 본인의 강점은 무엇인가요?"}`;
+  if(kind==="growth") ask=`"부족한 점을 어떻게 극복했는지" 같은 질문에 답할 성장 서사를 400자 내외로 써주세요. 위 검증된 행동 변화 시도 목록만 근거로 쓰세요.
+    실제로 바뀐 건 확실하게 쓰고, 부분적이거나 아직인 건 "지금도 시도하고 있다"처럼 진행형으로 정직하게 쓰세요. 검증 안 된 극복 서사를 지어내지 마세요.`;
+  const userPrompt=`${ctx}${growthBlock}\n\n요청: ${ask}\n\ntitle에는 문서 제목을, highlights에는 이번 초안에 실제로 사용한 근거를 짧은 문장 2~4개로(추상화된 문장으로, 원문 인용 금지) 넣어주세요.`;
+  return postClaude(settings, careerDocSystemPrompt(), userPrompt, CAREER_DOC_SCHEMA, 3000);
+}
+
+/* ============================================================
+   다짐 검증 — 자기보고가 아니라 이후 기간 근거로 실제 변화 여부를 판정한다.
+   ============================================================ */
+
+const VERIFY_SCHEMA = {
+  type:"object",
+  properties:{ verdict:{ type:"string", enum:["changed","partial","not_yet"] }, note:{ type:"string" } },
+  required:["verdict","note"], additionalProperties:false
+};
+const VERDICT_LABEL={ changed:"실제로 바뀜", partial:"조금 바뀜", not_yet:"아직 그대로" };
+
+let verifyingIds=new Set();
+
+async function verifyCommitment(id){
+  const settings=getSettings();
+  const cms=getCommitments(); const c=cms.find(x=>x.id===id); if(!c) return;
+  if(!settings.apiKey){ c.verifyNote="API 키가 있어야 확인할 수 있어요."; setCommitments(cms); render(); return; }
+  const after=getEntries().filter(e=>new Date(e.periodEnd||e.date) > new Date(c.createdAt));
+  if(!after.length){
+    c.verifyNote="아직 그 다짐 이후 기간 기록이 없어요. 새 기간을 분석하면 확인할 수 있어요.";
+    setCommitments(cms); render(); return;
+  }
+  verifyingIds.add(id); render();
+  const ctx=after.map(e=>`[${entryLabel(e)}] ${e.narrative||""}\n${(e.insights||[]).map(i=>`- (${i.polarity}) ${i.text}`).join("\n")}`).join("\n\n");
+  const goal=settings.careerGoal?`\n장기 목표: ${settings.careerGoal}`:"";
+  const userPrompt=`사용자가 이런 다짐을 했습니다: "${c.title} — ${c.description}"${goal}\n\n다짐 이후 쌓인 협업 기록:\n${ctx}\n\n이 다짐과 관련된 행동이 실제로 바뀌었는지 위 기록의 근거로만 판단하세요. 과장하지 말고, 근거가 부족하면 not_yet으로 판정하세요. note는 2~3문장으로, 왜 그렇게 판단했는지 구체적 근거를 담아 써주세요.`;
+  try{
+    const r=await postClaude(settings,
+      "당신은 사용자가 스스로 세운 행동 다짐이 실제 업무 기록에서 확인되는지 판정하는 코치입니다. 냉정하고 정직하게 판단하세요.",
+      userPrompt, VERIFY_SCHEMA, 1000);
+    const cms2=getCommitments(); const c2=cms2.find(x=>x.id===id);
+    if(c2){ c2.verdict=r.verdict; c2.verifyNote=r.note; c2.verifiedAt=new Date().toISOString(); c2.verifySeen=false; setCommitments(cms2); }
+  }catch(e){
+    const cms2=getCommitments(); const c2=cms2.find(x=>x.id===id);
+    if(c2){ c2.verifyNote=e.message||"확인하다 문제가 생겼어요."; setCommitments(cms2); }
+  }
+  verifyingIds.delete(id); render();
+}
+
+function persistAnalysis(p, selfPerception){
+  const entryId=uid(), now=new Date().toISOString();
+  const entries=load(KEY_ENTRIES,[]);
+  entries.push({ id:entryId, date:now,
+    periodStart:p.periodStart||"", periodEnd:p.periodEnd||"", periodLabel:p.periodLabel||"",
+    type:p.type, typeReason:p.typeReason, load:p.load,
+    scores:p.scores, benchmark:p.benchmark||null, benchmarkBasis:p.benchmarkBasis||"",
+    scoreBreakdown:p.scoreBreakdown||null, evidence:p.evidence||[],
+    insights:p.insights||[], improvements:p.improvements||[], activity:p.activity||[],
+    workMode:p.workMode, hasTimestamps:p.hasTimestamps,
+    narrative:p.narrative, whyThisMatters:p.whyThisMatters,
+    selfPerception:selfPerception||"", selfPerceptionNote:p.selfPerceptionNote||"",
+    colleagueMentions:(p.colleagues||[]).map(c=>c.name) });
+  setEntries(entries);
+
+  // Commitment는 Entry에 종속시키지 않고 별도 테이블로 관리 (마감 기준 추적)
+  const cms=getCommitments();
+  for(const c of (p.commitments||[]))
+    cms.push({ id:uid(), entryId, source:c.source, title:c.title, description:c.description,
+      scriptLine:c.scriptLine||"",
+      status:"proposed", deadline:c.deadline||null, relatedColleague:c.relatedColleague||null,
+      createdAt:now, completedAt:null });
+  setCommitments(cms);
+
+  const cols=getColleagues();
+  for(const c of (p.colleagues||[])){
+    let q=cols.find(z=>z.name===c.name);
+    if(!q){ q={name:c.name,interactionCount:0,lastInteraction:now,observedPatterns:[]}; cols.push(q); }
+    q.interactionCount+=1; q.lastInteraction=p.periodEnd||now;
+    for(const s of (c.patterns||[])) if(!q.observedPatterns.includes(s)) q.observedPatterns.push(s);
+    q.observedPatterns=q.observedPatterns.slice(-6);
+  }
+  setColleagues(cols);
+  evaluateTrophies();
+  autoVerifyOpenCommitments();
+}
+
+/* 새 기간이 들어올 때마다, 아직 "확실히 바뀜"으로 확정 안 된 열린 다짐을
+   자동으로 대조한다. 사용자가 링크를 기억해서 눌러야 하는 구조를 없앤다. */
+function autoVerifyOpenCommitments(){
+  const cms=getCommitments();
+  const targets=cms.filter(c=>["accepted","observing"].includes(c.status) && c.verdict!=="changed").slice(0,3);
+  targets.forEach(c=>verifyCommitment(c.id));
+}
+const unseenVerifications=()=>getCommitments().filter(c=>c.verdict && c.verifySeen===false);
+function markVerifySeen(){
+  const cms=getCommitments(); cms.forEach(c=>{ if(c.verdict) c.verifySeen=true; }); setCommitments(cms); render();
+}
+/* 검증이 연달아 "실제로 바뀜"으로 확정된 횟수 — 꾸준함을 눈에 보이게 한다. */
+function verifyStreak(){
+  const verified=getCommitments().filter(c=>c.verdict)
+    .sort((a,b)=>new Date(a.verifiedAt||0)-new Date(b.verifiedAt||0));
+  let streak=0;
+  for(let i=verified.length-1;i>=0;i--){
+    if(verified[i].verdict==="changed") streak++; else break;
+  }
+  return streak;
+}
+
+/* ============================================================
+   테스트용 샘플 — API 호출 없이 전 화면을 채운다
+   ============================================================ */
+
+const SAMPLE_CHAT = {
+  w1: `[07/27 09:42] 정민우: @김현주 이번 스프린트 기획 범위 오늘 확정 가능할까요?
+[07/27 09:47] 김현주: 네 오늘 중으로 확정해서 올릴게요 🙂 어제 논의된 검색 필터 범위만 한 번 더 정리하면 됩니다
+[07/27 10:15] 김현주: 검색 필터 스펙 초안 정리했습니다. 요약하면 (1) 카테고리 다중선택 (2) 가격 구간 슬라이더 (3) 정렬 4종입니다. 3번은 이번 스프린트에서 빼는 게 나을 것 같은데 의견 주세요
+[07/27 10:22] 박서준: 정렬 4종은 인덱스 새로 타야 해서 저도 다음 스프린트가 나을 것 같습니다
+[07/27 10:25] 김현주: 넵 그럼 3번은 백로그로 옮기겠습니다. 대신 기본 정렬만 최신순으로 고정할게요
+[07/27 14:03] 이하늘: 필터 UI 시안 두 가지 방향으로 잡아봤는데 어느 쪽이 스펙에 맞을까요?
+[07/27 14:11] 김현주: 시안 감사해요! 두 번째가 더 맞을 것 같습니다. 가격 슬라이더가 접히지 않고 계속 보이는 쪽이요. 사용자가 범위를 바꾸면서 결과 수가 바로 바뀌는 게 이 기능의 핵심이라서요
+[07/28 09:31] 김현주: 어제 논의 반영해서 스펙 문서 v2 올렸습니다. 변경점은 정렬 백로그 이동, 기본 정렬 최신순 고정, 슬라이더 상시 노출 3가지입니다
+[07/28 09:52] 정민우: @김현주 QA 시나리오는 언제쯤 나올까요?
+[07/28 09:58] 김현주: 목요일까지 초안 드릴게요. 스펙이 확정돼야 시나리오가 안 흔들려서 하루만 더 보겠습니다
+[07/28 15:20] 강수아: 가격 구간 슬라이더 최소 단위 문의드립니다. 1000원 단위로 가면 될까요?
+[07/28 15:26] 김현주: 상품 가격대가 대부분 1만원 이상이라 5000원 단위로 하고, 최저/최고는 직접 입력도 가능하게 하면 어떨까요?
+[07/28 16:40] 강수아: 좋습니다. 다만 최저값이 최고값보다 큰 경우 처리 방식을 정해주셔야 해요
+[07/28 16:45] 김현주: 자동으로 뒤집는 쪽이 좋겠습니다. 에러 띄우면 사용자가 왜 막혔는지 모르고 이탈할 가능성이 높아서요
+[07/29 11:12] 김현주: 필터를 걸었을 때 결과가 0건이면 어떻게 보여줄까요? 저는 "조건을 하나 줄여보세요" 안내와 함께 가장 최근 걸린 필터를 해제하는 버튼을 제안합니다
+[07/29 11:20] 이하늘: 그 패턴 좋습니다. 빈 화면 시안 같이 잡아둘게요
+[07/29 11:24] 김현주: 감사합니다 🙏 그럼 그렇게 확정할게요
+[07/30 10:05] 김현주: QA 시나리오 초안 올렸습니다. 총 24개이고 필터 조합 케이스가 14개, 경계값이 6개, 빈 결과가 4개입니다
+[07/30 10:30] 강수아: 경계값 케이스에 최저=최고 동일한 경우도 넣어주시면 좋겠습니다
+[07/30 10:36] 김현주: 아 그 케이스 빠졌네요. 바로 추가하겠습니다
+[07/31 09:15] 김현주: 이번 주 정리하면 스펙 v2 확정, QA 시나리오 25개 완료, 디자인 시안 2차까지 나왔습니다`,
+  w2: `[08/03 09:10] 정민우: @김현주 이번 주 개발 일정 브리핑 부탁드립니다
+[08/03 11:48] 김현주: 확인했습니다. 오후에 정리해서 공유드릴게요
+[08/03 15:22] 김현주: 개발 일정 정리했습니다. 필터 API 수요일, 프론트 연동 금요일, QA 다음 주 월요일 시작입니다
+[08/03 15:30] 정민우: 프론트 연동이 금요일이면 QA가 촉박하지 않나요?
+[08/03 18:05] 김현주: 하루 당길 수 있는지 확인해보겠습니다
+[08/03 18:40] 김현주: @박서준 프론트 연동 목요일로 하루 당기는 게 가능할까요?
+[08/03 18:44] 박서준: API가 수요일 오전에 나오면 가능합니다
+[08/03 18:52] 김현주: @강수아 API 수요일 오전까지 가능하실까요?
+[08/03 22:15] 강수아: 지금 인증 쪽 이슈 잡고 있어서 확답은 어렵습니다. 내일 오전에 다시 말씀드릴게요
+[08/03 23:04] 김현주: 네 알겠습니다. 확인되면 알려주세요
+[08/04 09:30] 강수아: API 수요일 오전 가능합니다
+[08/04 12:40] 김현주: 감사합니다. @박서준 목요일 연동으로 확정하겠습니다
+[08/04 13:05] 정민우: 좋습니다. 그럼 QA 인력은 누가 붙나요?
+[08/04 17:20] 김현주: 확인해서 알려드리겠습니다
+[08/04 17:35] 김현주: @이하늘 QA 기간에 디자인 QA도 같이 봐주실 수 있을까요?
+[08/04 17:50] 이하늘: 금요일 오후는 다른 건이 잡혀 있어서 월요일부터 가능합니다
+[08/04 18:02] 김현주: 알겠습니다. 그럼 기능 QA 먼저 돌리고 디자인 QA는 월요일에 붙이는 걸로 정리하겠습니다
+[08/05 09:05] 정민우: @김현주 어제 회의에서 나온 정산 자료는 언제 받을 수 있을까요?
+[08/05 13:30] 김현주: 수요일까지 정산 자료 보내드릴게요
+[08/05 09:40] 박서준: 스키마 아직 못 받았습니다
+[08/05 13:20] 김현주: 늦어서 죄송합니다. 지금 보내드릴게요
+[08/05 14:10] 김현주: @강수아 @박서준 내일 오전 10시에 연동 이슈 점검 짧게 하시죠. 30분이면 될 것 같습니다
+[08/05 20:30] 김현주: 내일 회의 안건 정리했습니다. 응답 스키마 확정, 에러 코드 정리, 페이징 방식 3개입니다
+[08/06 11:40] 김현주: 오늘 회의 결과 공유드립니다. 응답 스키마는 초안대로 가고, 에러 코드는 4종으로 줄였고, 페이징은 커서 방식으로 결정했습니다
+[08/06 15:20] 정민우: @김현주 다음 스프린트 범위도 슬슬 봐야 할 것 같은데 언제 논의할까요?
+[08/06 19:10] 김현주: 다음 주 화요일에 잡겠습니다
+[08/06 21:55] 김현주: @박서준 연동 진행 상황 어떠신가요?
+[08/07 10:15] 김현주: @이하늘 시안 최종본 확정된 걸로 봐도 될까요?
+[08/07 14:30] 김현주: @강수아 에러 코드 문서 업데이트 부탁드립니다
+[08/07 19:05] 김현주: 확인했습니다`
+};
+
+const SAMPLE_BENCH = { digitalization:72, responsiveness:74, clarity:70, initiative:66, kindness:78 };
+const SAMPLE_BENCH_BASIS = "기획 직무 지식노동자의 일반적인 Slack 협업 패턴을 기준으로 잡았습니다.";
+
+function bd(pairs){ return pairs.map(([name,value,weight])=>({name,value,weight})); }
+
+const SAMPLE_ENTRIES = [
+  { periodStart:"2026-07-27", periodEnd:"2026-07-31", periodLabel:"7월 27일 ~ 7월 31일",
+    type:"스마트 워커", typeReason:"메시지 양은 많지 않은데 결정이 필요한 지점마다 정리해서 올렸습니다.",
+    load:41,
+    scores:{digitalization:71,responsiveness:74,clarity:79,initiative:64,kindness:85},
+    workMode:{"진행관리":20,"문제 제기":15,"명확화":15,"실행·전달":50}, hasTimestamps:true,
+    scoreBreakdown:{
+      digitalization: bd([["메시지수",68,40],["메시지량",74,40],["스레드 내 대화률",70,20]]),
+      responsiveness: bd([["평균 응답시간",78,50],["응답률(단독 멘션)",72,30],["응답률(멀티 멘션)",66,20]]),
+      clarity: bd([["핵심정보 포함률",84,50],["작성 양식 적합성",74,50]]),
+      initiative: bd([["의견 발언률",70,50],["의견 주도성",58,50]]),
+      kindness: bd([["메시지톤",88,80],["이모지 포함률",73,20]])
+    },
+    benchmark:SAMPLE_BENCH, benchmarkBasis:SAMPLE_BENCH_BASIS,
+    evidence:[
+      { metric:"responsiveness", polarity:"positive", contextSpeaker:"정민우", contextAt:"07/27 09:42",
+        contextQuote:"@김현주 이번 스프린트 기획 범위 오늘 확정 가능할까요?",
+        speaker:"김현주", at:"07/27 09:47", quote:"네 오늘 중으로 확정해서 올릴게요 🙂 어제 논의된 검색 필터 범위만 한 번 더 정리하면 됩니다",
+        elapsed:"5분", note:"단독 멘션 요청에 5분 만에 답하면서 언제까지 할지도 같이 밝혔습니다.", day:"월", hour:9 },
+      { metric:"clarity", polarity:"positive", contextSpeaker:"", contextAt:"", contextQuote:"",
+        speaker:"김현주", at:"07/27 10:15", quote:"검색 필터 스펙 초안 정리했습니다. 요약하면 (1) 카테고리 다중선택 (2) 가격 구간 슬라이더 (3) 정렬 4종입니다",
+        elapsed:"", note:"항목을 번호로 끊어 써서 상대가 어디에 답해야 하는지 바로 보입니다.", day:"월", hour:10 },
+      { metric:"kindness", polarity:"positive", contextSpeaker:"이하늘", contextAt:"07/27 14:03",
+        contextQuote:"필터 UI 시안 두 가지 방향으로 잡아봤는데 어느 쪽이 스펙에 맞을까요?",
+        speaker:"김현주", at:"07/27 14:11", quote:"시안 감사해요! 두 번째가 더 맞을 것 같습니다. 사용자가 범위를 바꾸면서 결과 수가 바로 바뀌는 게 이 기능의 핵심이라서요",
+        elapsed:"8분", note:"고르기만 한 게 아니라 왜 그런지 이유를 붙였습니다.", day:"월", hour:14 },
+      { metric:"initiative", polarity:"negative", contextSpeaker:"강수아", contextAt:"07/28 16:40",
+        contextQuote:"다만 최저값이 최고값보다 큰 경우 처리 방식을 정해주셔야 해요",
+        speaker:"김현주", at:"07/28 16:45", quote:"자동으로 뒤집는 쪽이 좋겠습니다",
+        elapsed:"5분", note:"예외 케이스를 상대가 먼저 짚었습니다. 결정은 빨랐지만 먼저 꺼내지는 않았습니다.", day:"화", hour:16 },
+      { metric:"digitalization", polarity:"positive", contextSpeaker:"", contextAt:"", contextQuote:"",
+        speaker:"김현주", at:"07/30 10:05", quote:"QA 시나리오 초안 올렸습니다. 총 24개이고 필터 조합 케이스가 14개, 경계값이 6개, 빈 결과가 4개입니다",
+        elapsed:"", note:"결과물을 채널에 남겨 따로 묻지 않아도 진행 상황이 보입니다.", day:"목", hour:10 }
+    ],
+    insights:[
+      {polarity:"positive", text:"결정이 필요한 순간마다 선택지를 먼저 정리해 올렸습니다."},
+      {polarity:"positive", text:"답장 대부분이 10분 안에 나갔습니다."},
+      {polarity:"negative", text:"예외 상황은 대부분 상대가 먼저 짚었습니다."},
+      {polarity:"negative", text:"기획 외 영역에는 거의 말을 얹지 않았습니다."}
+    ],
+    improvements:[
+      { metric:"initiative", problem:"리스크를 먼저 꺼내기보다 지적받은 뒤 결정하는 흐름이 반복됩니다.",
+        causes:["스펙을 다 정리한 뒤에 공유하는 습관","예외 케이스 검토를 개발자에게 맡기는 분업"],
+        actions:["스펙 공유할 때 '걱정되는 지점' 한 줄을 같이 적기","결정 요청 시 내가 생각한 리스크 1개를 먼저 제시하기"] }
+    ],
+    activity:[
+      {day:"월",hour:9,count:3,score:76},{day:"월",hour:10,count:4,score:80},{day:"월",hour:14,count:3,score:82},
+      {day:"화",hour:9,count:2,score:74},{day:"화",hour:15,count:3,score:72},{day:"화",hour:16,count:2,score:70},
+      {day:"수",hour:11,count:4,score:78},{day:"수",hour:13,count:2,score:75},
+      {day:"목",hour:10,count:4,score:80},{day:"목",hour:15,count:2,score:73},
+      {day:"금",hour:9,count:3,score:77}
+    ],
+    narrative:"조용했지만 필요한 순간마다 정리해서 올린 한 주였습니다.",
+    whyThisMatters:"메시지 양이 적어도 결정이 밀리지 않았다는 뜻입니다.",
+    selfPerception:"기획서 정리하는 데 대부분 썼어요", selfPerceptionNote:"",
+    colleagues:[
+      {name:"박서준", patterns:["요청에 5분 안에 답하는 편","기술 제약을 근거로 판단을 도와줌"]},
+      {name:"이하늘", patterns:["의도를 설명해주면 방향을 빠르게 수정함","시안을 먼저 만들어 와서 물어봄"]},
+      {name:"정민우", patterns:["일정과 담당자를 먼저 확인함","요청이 짧고 반복적"]},
+      {name:"강수아", patterns:["응답은 느리지만 예외 케이스를 먼저 짚어줌"]}
+    ],
+    commitments:[
+      { source:"system_experiment", title:"스펙 공유에 걱정 한 줄 붙이기",
+        description:"스펙을 올릴 때 '이 부분이 걸립니다' 한 줄을 같이 적어보세요.",
+        scriptLine:"이 부분이 걸리는 게 있는데, 확인 가능하실까요?",
+        deadline:null, relatedColleague:null }
+    ]
+  },
+  { periodStart:"2026-08-03", periodEnd:"2026-08-07", periodLabel:"8월 3일 ~ 8월 7일",
+    type:"하드 워커", typeReason:"메시지는 크게 늘었는데 답하는 속도가 눈에 띄게 느려졌습니다.",
+    load:78,
+    scores:{digitalization:82,responsiveness:62,clarity:81,initiative:69,kindness:88},
+    workMode:{"진행관리":55,"문제 제기":5,"명확화":10,"실행·전달":30}, hasTimestamps:true,
+    scoreBreakdown:{
+      digitalization: bd([["메시지수",88,40],["메시지량",80,40],["스레드 내 대화률",74,20]]),
+      responsiveness: bd([["평균 응답시간",48,50],["응답률(단독 멘션)",78,30],["응답률(멀티 멘션)",72,20]]),
+      clarity: bd([["핵심정보 포함률",86,50],["작성 양식 적합성",76,50]]),
+      initiative: bd([["의견 발언률",74,50],["의견 주도성",64,50]]),
+      kindness: bd([["메시지톤",90,80],["이모지 포함률",80,20]])
+    },
+    benchmark:SAMPLE_BENCH, benchmarkBasis:SAMPLE_BENCH_BASIS,
+    evidence:[
+      { metric:"responsiveness", polarity:"negative", contextSpeaker:"정민우", contextAt:"08/03 09:10",
+        contextQuote:"@김현주 이번 주 개발 일정 브리핑 부탁드립니다",
+        speaker:"김현주", at:"08/03 11:48", quote:"확인했습니다. 오후에 정리해서 공유드릴게요",
+        elapsed:"2시간 38분", note:"단독 멘션인데 확인 자체가 두 시간 반 뒤였습니다.", day:"월", hour:11 },
+      { metric:"responsiveness", polarity:"negative", contextSpeaker:"박서준", contextAt:"08/05 09:40",
+        contextQuote:"스키마 아직 못 받았습니다",
+        speaker:"김현주", at:"08/05 13:20", quote:"늦어서 죄송합니다. 지금 보내드릴게요",
+        elapsed:"3시간 40분", note:"상대가 먼저 재촉한 뒤에 움직였습니다.", day:"수", hour:13 },
+      { metric:"responsiveness", polarity:"positive", contextSpeaker:"박서준", contextAt:"08/03 18:44",
+        contextQuote:"API가 수요일 오전에 나오면 가능합니다",
+        speaker:"김현주", at:"08/03 18:52", quote:"@강수아 API 수요일 오전까지 가능하실까요?",
+        elapsed:"8분", note:"조율은 바로 이어받아 다음 사람에게 넘겼습니다.", day:"월", hour:18 },
+      { metric:"kindness", polarity:"positive", contextSpeaker:"정민우", contextAt:"08/05 09:05",
+        contextQuote:"@김현주 어제 회의에서 나온 정산 자료는 언제 받을 수 있을까요?",
+        speaker:"김현주", at:"08/05 13:30", quote:"수요일까지 정산 자료 보내드릴게요",
+        elapsed:"4시간 25분", note:"늦게 답했지만 기한을 못박아 상대가 더 안 물어도 되게 했습니다.", day:"수", hour:13 },
+      { metric:"clarity", polarity:"positive", contextSpeaker:"", contextAt:"", contextQuote:"",
+        speaker:"김현주", at:"08/06 11:40", quote:"오늘 회의 결과 공유드립니다. 응답 스키마는 초안대로 가고, 에러 코드는 4종으로 줄였고, 페이징은 커서 방식으로 결정했습니다",
+        elapsed:"", note:"회의에 없던 사람도 결론만 읽으면 되게 정리했습니다.", day:"목", hour:11 },
+      { metric:"digitalization", polarity:"negative", contextSpeaker:"", contextAt:"", contextQuote:"",
+        speaker:"김현주", at:"08/03 23:04", quote:"네 알겠습니다. 확인되면 알려주세요",
+        elapsed:"", note:"밤 11시에 나간 메시지입니다. 이번 기간에 심야 발신이 3건 있었습니다.", day:"월", hour:23 },
+      { metric:"initiative", polarity:"positive", contextSpeaker:"", contextAt:"", contextQuote:"",
+        speaker:"김현주", at:"08/05 14:10", quote:"@강수아 @박서준 내일 오전 10시에 연동 이슈 점검 짧게 하시죠. 30분이면 될 것 같습니다",
+        elapsed:"", note:"막힌 지점을 보고 회의를 먼저 잡았습니다.", day:"수", hour:14 }
+    ],
+    insights:[
+      {polarity:"positive", text:"메시지 수가 지난 기간보다 40% 늘었습니다."},
+      {polarity:"positive", text:"회의 결과를 그날 안에 정리해 올렸습니다."},
+      {polarity:"negative", text:"오후 5~7시에 응답 지연이 몰려 있습니다."},
+      {polarity:"negative", text:"밤 10시 이후 보낸 메시지가 3건 있었습니다."},
+      {polarity:"negative", text:"단독 멘션 평균 응답 시간이 22분에서 1시간 48분으로 늘었습니다."}
+    ],
+    improvements:[
+      { metric:"responsiveness", problem:"단독 멘션을 받고 첫 반응까지 걸리는 시간이 크게 늘었습니다.",
+        causes:["오후에 조율 업무가 몰림","정리해서 답하려다 확인 자체가 늦어짐","알림을 몰아서 확인하는 패턴"],
+        actions:["요청을 보면 '언제까지 답변드릴게요' 한 줄을 먼저 보내기","오후 코어타임 30분을 응답 전용으로 비워두기"] },
+      { metric:"initiative", problem:"의견을 내기보다 상대 의견을 옮기는 메시지가 많았습니다.",
+        causes:["조율 역할이 늘면서 중계에 시간이 쏠림"],
+        actions:["일정 조율할 때 내 안을 먼저 제시하고 확인받기"] }
+    ],
+    activity:[
+      {day:"월",hour:9,count:2,score:60},{day:"월",hour:11,count:3,score:56},{day:"월",hour:15,count:4,score:66},
+      {day:"월",hour:18,count:5,score:64},{day:"월",hour:22,count:1,score:44},{day:"월",hour:23,count:2,score:42},
+      {day:"화",hour:9,count:3,score:72},{day:"화",hour:12,count:4,score:70},{day:"화",hour:17,count:5,score:58},
+      {day:"화",hour:18,count:3,score:60},
+      {day:"수",hour:13,count:6,score:74},{day:"수",hour:14,count:4,score:76},{day:"수",hour:20,count:2,score:54},
+      {day:"목",hour:11,count:5,score:80},{day:"목",hour:15,count:3,score:70},{day:"목",hour:19,count:2,score:58},
+      {day:"목",hour:21,count:2,score:50},
+      {day:"금",hour:10,count:4,score:78},{day:"금",hour:14,count:3,score:72},{day:"금",hour:19,count:2,score:56}
+    ],
+    narrative:"이번 기간의 나는 만드는 사람보다 옮기는 사람에 가까웠습니다.",
+    whyThisMatters:"조율이 늘면서 남의 요청에 답하는 순서가 뒤로 밀렸습니다.",
+    selfPerception:"이번에도 기획 위주로 했어요",
+    selfPerceptionNote:"기획을 했다고 느끼셨지만, 메시지의 절반 이상이 일정과 담당자를 맞추는 진행관리였습니다.",
+    colleagues:[
+      {name:"박서준", patterns:["막히면 먼저 알려주는 편"]},
+      {name:"정민우", patterns:["진행 상황을 주기적으로 확인함"]},
+      {name:"강수아", patterns:["밤 늦게까지 이슈를 붙잡고 있는 편"]},
+      {name:"이하늘", patterns:["일정이 겹치면 대안 날짜를 먼저 제시함"]}
+    ],
+    commitments:[
+      { source:"self_promise", title:"수요일까지 정산 자료 보내기",
+        description:"정민우님에게 정산 자료를 수요일까지 공유하기로 했습니다.",
+        scriptLine:"정산 자료는 수요일까지 보내드릴게요.",
+        deadline:new Date(Date.now()+86400000).toISOString().slice(0,10), relatedColleague:"정민우" },
+      { source:"system_experiment", title:"요청 확인 한 줄 먼저 보내기",
+        description:"바로 답하기 어려우면 '언제까지 답변드릴게요' 한 줄을 먼저 보내보세요.",
+        scriptLine:"확인했습니다. OO까지 답변드릴게요.",
+        deadline:null, relatedColleague:null }
+    ]
+  },
+  /* 아래 4개는 "흐름이 길면 어떻게 보이나"를 보여주기 위한 추가 샘플.
+     오르내림이 실제로 보이도록 부하·점수를 히어로맵 기준선(부하50/점수65)에 맞춰 설계했고,
+     유형도 서로 다르게 섞어서 도감이 채워지는 모습까지 같이 보이게 했다. */
+  { periodStart:"2026-08-10", periodEnd:"2026-08-14", periodLabel:"8월 10일 ~ 8월 14일",
+    type:"스마트 워커", typeReason:"메시지 양을 줄이면서도 질문 몇 개로 요구사항을 빠르게 좁혔습니다.",
+    load:44,
+    scores:{digitalization:76,responsiveness:71,clarity:82,initiative:68,kindness:86},
+    workMode:{"진행관리":20,"문제 제기":15,"명확화":45,"실행·전달":20}, hasTimestamps:true,
+    scoreBreakdown:{
+      digitalization: bd([["메시지수",70,40],["메시지량",78,40],["스레드 내 대화률",80,20]]),
+      responsiveness: bd([["평균 응답시간",70,50],["응답률(단독 멘션)",74,30],["응답률(멀티 멘션)",68,20]]),
+      clarity: bd([["핵심정보 포함률",86,50],["작성 양식 적합성",78,50]]),
+      initiative: bd([["의견 발언률",66,50],["의견 주도성",70,50]]),
+      kindness: bd([["메시지톤",90,80],["이모지 포함률",74,20]])
+    },
+    benchmark:SAMPLE_BENCH, benchmarkBasis:SAMPLE_BENCH_BASIS,
+    evidence:[
+      { metric:"clarity", polarity:"positive", contextSpeaker:"강수아", contextAt:"08/12 11:20",
+        contextQuote:"이 스펙 범위가 신규 유저만인지 기존 유저도 포함인지 헷갈립니다",
+        speaker:"김현주", at:"08/12 11:26", quote:"신규 유저만입니다. 기존 유저는 다음 스프린트로 뺐어요",
+        elapsed:"6분", note:"질문 하나로 범위 혼선을 바로 정리했습니다.", day:"수", hour:11 },
+      { metric:"responsiveness", polarity:"positive", contextSpeaker:"이하늘", contextAt:"08/13 10:02",
+        contextQuote:"시안 두 번째 버전 확인 부탁드려요", speaker:"김현주", at:"08/13 10:19",
+        quote:"확인했습니다, 이대로 진행해주세요", elapsed:"17분", note:"확인 요청에 빠르게 답했습니다.", day:"목", hour:10 }
+    ],
+    insights:[
+      {polarity:"positive", text:"질문 몇 개로 요구사항 범위를 빠르게 좁혔습니다."},
+      {polarity:"positive", text:"응답 속도가 지난 기간보다 눈에 띄게 빨라졌습니다."},
+      {polarity:"negative", text:"먼저 의견을 낸 경우는 여전히 적었습니다."}
+    ],
+    improvements:[
+      { metric:"initiative", problem:"질문으로 명확히 하는 데는 강한데, 방향을 먼저 제안하는 경우는 적었습니다.",
+        causes:["확인받는 방식이 익숙해짐"], actions:["질문 대신 '이렇게 하면 어떨까요' 형태로 먼저 제안해보기"] }
+    ],
+    activity:[
+      {day:"화",hour:10,count:3,score:80},{day:"수",hour:11,count:4,score:82},
+      {day:"목",hour:10,count:3,score:78},{day:"금",hour:14,count:2,score:75}
+    ],
+    narrative:"이번 기간의 나는 질문으로 정리하는 사람에 가까웠습니다.",
+    whyThisMatters:"혼선이 생기기 전에 질문으로 먼저 좁혀서 재작업이 줄었습니다.",
+    selfPerception:"", selfPerceptionNote:"",
+    colleagues:[
+      {name:"강수아", patterns:["범위가 애매하면 먼저 짚고 넘어가는 편"]},
+      {name:"이하늘", patterns:["확인만 빠르면 진행이 잘 됨"]},
+      {name:"박서준", patterns:["질문에 짧고 정확하게 답함"]}
+    ],
+    commitments:[]
+  },
+  { periodStart:"2026-08-17", periodEnd:"2026-08-21", periodLabel:"8월 17일 ~ 8월 21일",
+    type:"히어로", typeReason:"업무량도 많았지만 그만큼 결과물도 계속 나왔습니다.",
+    load:72,
+    scores:{digitalization:85,responsiveness:74,clarity:83,initiative:75,kindness:84},
+    workMode:{"진행관리":20,"문제 제기":10,"명확화":15,"실행·전달":55}, hasTimestamps:true,
+    scoreBreakdown:{
+      digitalization: bd([["메시지수",88,40],["메시지량",84,40],["스레드 내 대화률",82,20]]),
+      responsiveness: bd([["평균 응답시간",72,50],["응답률(단독 멘션)",78,30],["응답률(멀티 멘션)",72,20]]),
+      clarity: bd([["핵심정보 포함률",85,50],["작성 양식 적합성",81,50]]),
+      initiative: bd([["의견 발언률",76,50],["의견 주도성",74,50]]),
+      kindness: bd([["메시지톤",88,80],["이모지 포함률",70,20]])
+    },
+    benchmark:SAMPLE_BENCH, benchmarkBasis:SAMPLE_BENCH_BASIS,
+    evidence:[
+      { metric:"initiative", polarity:"positive", contextSpeaker:"", contextAt:"", contextQuote:"",
+        speaker:"김현주", at:"08/18 10:40", quote:"이번엔 정렬 옵션을 미리 3안으로 잡아서 공유드립니다. 저는 2안이 나아 보입니다",
+        elapsed:"", note:"결정을 기다리지 않고 먼저 안을 짜서 냈습니다.", day:"화", hour:10 },
+      { metric:"digitalization", polarity:"positive", contextSpeaker:"", contextAt:"", contextQuote:"",
+        speaker:"김현주", at:"08/19 16:10", quote:"오늘까지 정렬 3종, 필터 2종, QA 시나리오 초안까지 올렸습니다",
+        elapsed:"", note:"결과물이 계속 쌓여 나갔습니다.", day:"수", hour:16 },
+      { metric:"responsiveness", polarity:"negative", contextSpeaker:"박서준", contextAt:"08/20 15:02",
+        contextQuote:"정렬 옵션 API 스펙 확인 가능할까요", speaker:"김현주", at:"08/20 16:48",
+        quote:"확인했습니다, 이대로 가시죠", elapsed:"1시간 46분",
+        note:"결과물을 내느라 확인 요청이 밀렸습니다.", day:"목", hour:16 }
+    ],
+    insights:[
+      {polarity:"positive", text:"결정을 기다리지 않고 먼저 안을 만들어 제시하는 경우가 늘었습니다."},
+      {polarity:"positive", text:"결과물 산출량이 이번 관찰 중 가장 많았습니다."},
+      {polarity:"negative", text:"만드는 데 집중하느라 확인 요청이 가끔 밀렸습니다."}
+    ],
+    improvements:[
+      { metric:"responsiveness", problem:"결과물을 내는 데 몰입하면서 짧은 확인 요청에 답이 늦어졌습니다.",
+        causes:["작업에 집중하는 시간이 길어짐"], actions:["작업 사이 짧은 확인 요청은 그 자리에서 바로 처리하기"] }
+    ],
+    activity:[
+      {day:"화",hour:10,count:5,score:82},{day:"화",hour:15,count:4,score:78},
+      {day:"수",hour:16,count:5,score:84},{day:"목",hour:11,count:4,score:80},
+      {day:"목",hour:16,count:3,score:66},{day:"금",hour:10,count:4,score:80}
+    ],
+    narrative:"이번 기간의 나는 몰입해서 만들어내는 사람에 가까웠습니다.",
+    whyThisMatters:"업무량이 늘어도 결과물이 같이 늘면 부담이 오래가지 않습니다.",
+    selfPerception:"", selfPerceptionNote:"",
+    colleagues:[
+      {name:"박서준", patterns:["결과물이 쌓이면 확인 요청을 몰아서 보내는 편"]},
+      {name:"정민우", patterns:["결과물이 나오면 반응이 빠름"]}
+    ],
+    commitments:[]
+  },
+  { periodStart:"2026-08-24", periodEnd:"2026-08-28", periodLabel:"8월 24일 ~ 8월 28일",
+    type:"협업 단절", typeReason:"혼자 처리한 일이 많아서 대화 자체가 크게 줄었습니다.",
+    load:25,
+    scores:{digitalization:45,responsiveness:50,clarity:70,initiative:72,kindness:65},
+    workMode:{"진행관리":10,"문제 제기":40,"명확화":20,"실행·전달":30}, hasTimestamps:true,
+    scoreBreakdown:{
+      digitalization: bd([["메시지수",38,40],["메시지량",44,40],["스레드 내 대화률",60,20]]),
+      responsiveness: bd([["평균 응답시간",46,50],["응답률(단독 멘션)",56,30],["응답률(멀티 멘션)",48,20]]),
+      clarity: bd([["핵심정보 포함률",72,50],["작성 양식 적합성",68,50]]),
+      initiative: bd([["의견 발언률",70,50],["의견 주도성",74,50]]),
+      kindness: bd([["메시지톤",68,80],["이모지 포함률",55,20]])
+    },
+    benchmark:SAMPLE_BENCH, benchmarkBasis:SAMPLE_BENCH_BASIS,
+    evidence:[
+      { metric:"initiative", polarity:"positive", contextSpeaker:"", contextAt:"", contextQuote:"",
+        speaker:"김현주", at:"08/26 14:20", quote:"정렬 로직에 엣지케이스가 하나 더 있어서 미리 짚어둡니다. 동시간 등록된 상품이 섞이는 경우입니다",
+        elapsed:"", note:"드물게 낸 메시지가 문제 제기였습니다.", day:"수", hour:14 },
+      { metric:"digitalization", polarity:"negative", contextSpeaker:"", contextAt:"", contextQuote:"",
+        speaker:"김현주", at:"08/25 11:00", quote:"네",
+        elapsed:"", note:"이번 기간 메시지 자체가 크게 줄었습니다.", day:"화", hour:11 }
+    ],
+    insights:[
+      {polarity:"positive", text:"드물게 낸 말이 대부분 놓치기 쉬운 엣지케이스 지적이었습니다."},
+      {polarity:"negative", text:"메시지 수가 지난 기간의 절반 이하로 줄었습니다."},
+      {polarity:"negative", text:"먼저 말을 건 경우가 거의 없었습니다."}
+    ],
+    improvements:[
+      { metric:"digitalization", problem:"혼자 처리하는 일이 많아지면서 채널에 남긴 흔적이 크게 줄었습니다.",
+        causes:["개인 작업에 집중한 기간","진행 상황을 굳이 안 알려도 되는 일이 많았음"],
+        actions:["혼자 일할 때도 진행 상황을 짧게라도 채널에 남겨보기"] }
+    ],
+    activity:[
+      {day:"화",hour:11,count:1,score:55},{day:"수",hour:14,count:2,score:70},{day:"금",hour:10,count:1,score:60}
+    ],
+    narrative:"이번 기간의 나는 조용히 혼자 처리하는 사람에 가까웠습니다.",
+    whyThisMatters:"대화가 줄어든 게 문제라기보다, 그만큼 안 알려도 되는 일이 많았던 기간입니다.",
+    selfPerception:"", selfPerceptionNote:"",
+    colleagues:[
+      {name:"강수아", patterns:["먼저 묻지 않으면 조용한 편"]}
+    ],
+    commitments:[]
+  },
+  { periodStart:"2026-08-31", periodEnd:"2026-09-04", periodLabel:"8월 31일 ~ 9월 4일",
+    type:"하드 워커", typeReason:"다시 바빠졌는데, 이번엔 확인 못 하고 넘어갈까 봐 되묻는 질문이 늘었습니다.",
+    load:68,
+    scores:{digitalization:74,responsiveness:52,clarity:68,initiative:55,kindness:70},
+    workMode:{"진행관리":25,"문제 제기":15,"명확화":40,"실행·전달":20}, hasTimestamps:true,
+    scoreBreakdown:{
+      digitalization: bd([["메시지수",78,40],["메시지량",72,40],["스레드 내 대화률",68,20]]),
+      responsiveness: bd([["평균 응답시간",40,50],["응답률(단독 멘션)",62,30],["응답률(멀티 멘션)",56,20]]),
+      clarity: bd([["핵심정보 포함률",70,50],["작성 양식 적합성",66,50]]),
+      initiative: bd([["의견 발언률",52,50],["의견 주도성",58,50]]),
+      kindness: bd([["메시지톤",74,80],["이모지 포함률",56,20]])
+    },
+    benchmark:SAMPLE_BENCH, benchmarkBasis:SAMPLE_BENCH_BASIS,
+    evidence:[
+      { metric:"responsiveness", polarity:"negative", contextSpeaker:"정민우", contextAt:"09/02 09:20",
+        contextQuote:"@김현주 다음 스프린트 우선순위 정리됐나요", speaker:"김현주", at:"09/02 13:05",
+        quote:"오늘 중으로 정리해서 드릴게요", elapsed:"3시간 45분",
+        note:"확인 요청에 답이 다시 느려졌습니다.", day:"화", hour:13 },
+      { metric:"clarity", polarity:"negative", contextSpeaker:"이하늘", contextAt:"09/03 10:10",
+        contextQuote:"이 부분 우선순위 상 우선지 하 우선인지 다시 확인 부탁드려요",
+        speaker:"김현주", at:"09/03 10:41", quote:"상 우선입니다, 헷갈리게 적었네요 죄송해요",
+        elapsed:"31분", note:"우선순위 표기가 다시 헷갈려서 되물음을 받았습니다.", day:"수", hour:10 },
+      { metric:"clarity", polarity:"positive", contextSpeaker:"박서준", contextAt:"09/03 15:00",
+        contextQuote:"이 API는 캐시 써도 되는 데이터인가요", speaker:"김현주", at:"09/03 15:07",
+        quote:"자주 안 바뀌는 값이라 5분 캐시 걸어도 됩니다", elapsed:"7분",
+        note:"조건을 명확히 붙여 되묻지 않게 답했습니다.", day:"수", hour:15 }
+    ],
+    insights:[
+      {polarity:"negative", text:"단독 멘션 응답 시간이 다시 3시간대로 늘었습니다."},
+      {polarity:"negative", text:"우선순위·범위 표기가 헷갈려 되묻는 질문을 두 번 받았습니다."},
+      {polarity:"positive", text:"조건을 붙여 답한 경우엔 되묻기가 없었습니다."}
+    ],
+    improvements:[
+      { metric:"clarity", problem:"바빠지면서 메시지를 짧게 줄이다 보니 우선순위 표기가 헷갈리는 경우가 늘었습니다.",
+        causes:["빠르게 쓰느라 핵심어를 생략함"],
+        actions:["우선순위·마감처럼 헷갈리기 쉬운 정보는 줄여도 표기는 남기기"] }
+    ],
+    activity:[
+      {day:"월",hour:9,count:3,score:60},{day:"화",hour:13,count:4,score:58},
+      {day:"수",hour:10,count:3,score:62},{day:"수",hour:15,count:3,score:70},
+      {day:"목",hour:17,count:2,score:54}
+    ],
+    narrative:"이번 기간의 나는 다시 바빠졌고, 되묻는 질문을 꽤 많이 받았습니다.",
+    whyThisMatters:"바쁠 때 표기를 줄이는 습관이 되묻기로 이어졌습니다.",
+    selfPerception:"", selfPerceptionNote:"",
+    colleagues:[
+      {name:"정민우", patterns:["우선순위 관련 확인을 자주 함"]},
+      {name:"이하늘", patterns:["표기가 애매하면 바로 되물음"]},
+      {name:"박서준", patterns:["조건부로 답하면 추가 질문 없이 진행함"]}
+    ],
+    commitments:[]
+  }
+];
+
+function loadSampleData(){
+  if(getEntries().length){ askConfirm("지금 있는 기록을 지우고 샘플로 채울까요?", doLoadSampleData); return; }
+  doLoadSampleData();
+}
+function doLoadSampleData(){
+  const s=getSettings();
+  setSettings({ ...s, selfName:"김현주", jobRole:"기획", careerGoal:"시니어 기획자로 이직 준비", onboarded:true });
+
+  const entries=[], cms=[], cols=[];
+  for(const S of SAMPLE_ENTRIES){
+    const id=uid(), when=new Date(S.periodEnd+"T18:00:00").toISOString();
+    entries.push({ id, date:when, periodStart:S.periodStart, periodEnd:S.periodEnd, periodLabel:S.periodLabel,
+      type:S.type, typeReason:S.typeReason, load:S.load, scores:S.scores,
+      benchmark:S.benchmark, benchmarkBasis:S.benchmarkBasis, scoreBreakdown:S.scoreBreakdown,
+      evidence:S.evidence, insights:S.insights, improvements:S.improvements, activity:S.activity,
+      workMode:S.workMode, hasTimestamps:S.hasTimestamps, narrative:S.narrative,
+      whyThisMatters:S.whyThisMatters, selfPerception:S.selfPerception,
+      selfPerceptionNote:S.selfPerceptionNote, colleagueMentions:S.colleagues.map(c=>c.name) });
+    for(const c of S.commitments)
+      cms.push({ id:uid(), entryId:id, source:c.source, title:c.title, description:c.description,
+        scriptLine:c.scriptLine||"",
+        status:"proposed", deadline:c.deadline, relatedColleague:c.relatedColleague,
+        createdAt:when, completedAt:null });
+    for(const c of S.colleagues){
+      let q=cols.find(z=>z.name===c.name);
+      if(!q){ q={name:c.name,interactionCount:0,lastInteraction:when,observedPatterns:[]}; cols.push(q); }
+      q.interactionCount+=1; q.lastInteraction=when;
+      for(const p of c.patterns) if(!q.observedPatterns.includes(p)) q.observedPatterns.push(p);
+    }
+  }
+  // 첫 다짐은 이미 몇 기간 뒤 근거로 확인까지 마친 상태로 보여준다 (실사용 흐름 시연용).
+  if(cms[0]){
+    cms[0].status="accepted";
+    cms[0].verdict="partial";
+    cms[0].verifyNote="8월 3일~7일 기록에서 막힌 지점을 먼저 짚어 회의를 잡은 사례가 한 번 있었지만, 스펙을 공유할 때 걱정되는 지점을 먼저 적는 습관까지는 아직 이어지지 않았습니다.";
+    cms[0].verifiedAt=new Date().toISOString();
+    cms[0].verifySeen=true; // 처음 채워 넣는 시연용 상태라 "새 결과 나왔어요" 배너를 띄우지 않는다.
+  }
+  setEntries(entries); setCommitments(cms); setColleagues(cols);
+  setCareerDocs([{ id:uid(), kind:"cover", title:"협업 경험 자소서 답변 초안",
+    company:"OO 컴퍼니", question:"협업 과정에서 갈등을 해결한 경험을 서술하시오.",
+    content:"필터 기능 개발 과정에서 정렬 옵션의 처리 범위를 두고 개발팀과 의견이 갈린 적이 있습니다. 저는 우선순위를 다시 정리해 이번 스프린트에서 뺄 항목을 명확히 제안했고, 기술적 제약을 근거로 한 상대 의견을 반영해 빠르게 합의점을 찾았습니다. 이후 결정 사항을 문서로 정리해 팀 전체가 같은 기준으로 움직일 수 있게 했습니다. 이 과정에서 갈등은 의견 차이 자체보다 정리되지 않은 정보에서 비롯된다는 것을 배웠고, 이후로는 결정이 필요한 지점마다 선택지를 먼저 정리해 공유하는 습관을 들였습니다.",
+    highlights:["의견이 갈리는 지점에서 우선순위를 정리해 제안한 사례","기술적 제약을 반영해 빠르게 합의에 이른 사례","결정 사항을 문서화해 팀 전체에 공유한 사례"],
+    createdAt:new Date().toISOString() }]);
+  setCareerMaterials([{ id:uid(), title:"사내 해커톤 우수상 (2025)",
+    content:"2025년 사내 해커톤에서 팀장으로 참여해 3일간 검색 추천 프로토타입을 기획·발표했고, 참가 12팀 중 우수상을 받았습니다. Slack에는 안 남아 있지만 이력서에 넣고 싶은 경험입니다.",
+    createdAt:new Date().toISOString() }]);
+  save(KEY_TROPHIES,{earned:[],initialized:false});   // 소급 평가가 처음부터 돌게
+  evaluateTrophies();
+  go('home');
+}
+
+// 기간이 섞이면 추이가 흐려지므로 한 주씩만 채운다.
+function fillSampleChat(week){
+  const s=getSettings();
+  if(!s.selfName) setSettings({ ...s, selfName:"김현주", jobRole:s.jobRole||"기획" });
+  pasteBlocks=[{kind:"channel",text:SAMPLE_CHAT[week]}];
+  render();
+}
+
+/* ============================================================
+   상태
+   ============================================================ */
+
+let view="home", pasteBlocks=[{kind:"channel",text:""}], busy=false, errorMsg="", selfPerceptionDraft="";
+let selectedMetric=null, evidenceFilter="all", hiddenSeries=[], modal=null;
+let recordTab="periods", introStep=0, warnDismissed=false;
+
+function go(n){ view=n; errorMsg=""; modal=null; window.scrollTo(0,0); render(); }
+function openMetric(k){ selectedMetric=k; evidenceFilter="all"; view="metric"; window.scrollTo(0,0); render(); }
+function setEvidenceFilter(k){ evidenceFilter=k; render(); }
+function toggleSeries(k){ hiddenSeries=hiddenSeries.includes(k)?hiddenSeries.filter(x=>x!==k):[...hiddenSeries,k]; render(); }
+function setRecordTab(t){ recordTab=t; render(); }
+/* 초안을 수정하는 중에 배경이나 X를 누르면, 저장 안 한 내용을 바로 지우지 않고
+   먼저 보기 모드로만 돌아간다. 완전히 닫으려면 한 번 더 눌러야 한다. */
+function closeModal(){
+  if(editingDocId){
+    const doc=getCareerDocs().find(d=>d.id===editingDocId);
+    editingDocId=null;
+    if(doc){ modal={ ...modal, html:careerDocModalBody(doc) }; render(); return; }
+  }
+  modal=null; render();
+}
+function dismissWarn(){ warnDismissed=true; render(); }
+
+/* 네이티브 confirm() 대신 화면 톤에 맞는 확인 모달. */
+let pendingConfirm=null;
+function askConfirm(message, onYes){
+  pendingConfirm=onYes;
+  modal={ title:"확인", subtitle:"", html:`<p class="intro-d">${esc(message)}</p>
+    <div class="btn-row" style="margin-top:14px">
+      <button class="btn btn-primary btn-sm" onclick="resolveConfirm(true)">네, 진행할게요</button>
+      <button class="btn btn-sm" onclick="resolveConfirm(false)">취소</button>
+    </div>` };
+  render();
+}
+function resolveConfirm(yes){
+  const cb=pendingConfirm; pendingConfirm=null; modal=null;
+  if(yes && cb) cb();
+  render();
+}
+function showStorageHelp(){
+  modal={ title:"기록을 저장하려면",
+    subtitle:"브라우저가 파일로 연 페이지의 저장을 막고 있습니다.",
+    html:`<p class="intro-d">터미널에서 아래를 실행하고 <b>localhost:8000</b> 으로 열면 정상 저장됩니다.</p>
+      <div class="formula">cd ~/CollaBrain_Personal &amp;&amp; python3 -m http.server 8000</div>
+      <p class="card-note">Safari로 열면 파일 그대로도 저장됩니다. Chrome만 막습니다.</p>` };
+  render();
+}
+
+function openCause(metricKey, entryIdx){
+  const e=getEntries()[entryIdx]; if(!e) return;
+  const bd=e.scoreBreakdown?.[metricKey]||[];
+  modal={ title:"원인분석",
+    subtitle:`${METRICS[metricKey].label} · ${entryLabel(e)}<br>${
+      bd.map(p=>`${esc(p.name)} ${p.value}점`).join(" | ")||METRICS[metricKey].formula}`,
+    items:(e.evidence||[]).filter(z=>z.metric===metricKey) };
+  window.scrollTo(0,0); render();
+}
+function openHourCause(entryIdx, day, hour){
+  const e=getEntries()[entryIdx]; if(!e) return;
+  const a=(e.activity||[]).find(z=>z.day===day&&z.hour===hour);
+  modal={ title:"원인분석",
+    subtitle:`${entryLabel(e)} · ${day}요일 ${hour}시 · 메시지 ${a?.count??0}건${a?.score!=null?` | 점수 ${a.score}`:""}`,
+    items:(e.evidence||[]).filter(z=>z.day===day&&z.hour===hour),
+    emptyNote:"이 시간대는 연결된 대화가 없어요. 다른 칸을 눌러보세요." };
+  window.scrollTo(0,0); render();
+}
+function openTypeInfo(code){
+  const t=TYPES[code]; if(!t) return;
+  const quad=QUAD_BY_CODE[code[0]], mode=Object.keys(MODE_CODE).find(m=>MODE_CODE[m]===code[1]);
+  const entries=getEntries().filter(e=>typeCode(e)===code);
+  modal={ title:`${t.e} ${t.n}`,
+    subtitle:`<b>${code}</b> · ${quad} · ${mode} 위주<br>${QUADRANTS[quad].desc}`,
+    html:`<p class="intro-d" style="margin:0 0 14px">${esc(t.l)}</p>
+      ${entries.length
+        ? `<div class="subhead">이 유형이었던 때</div>
+           ${entries.map(e=>`<div class="hist"><div class="hist-date">${esc(entryLabel(e))}</div>
+             <div class="hist-type">${esc(e.type)}</div><div class="hist-score">${avgScore(e.scores)}</div></div>`).join("")}`
+        : `<div class="card-note">아직 이 유형이 된 적은 없네요.</div>`}` };
+  window.scrollTo(0,0); render();
+}
+
+/* ============================================================
+   근거 · 모달
+   ============================================================ */
+
+function evidenceItem(e){
+  const ctx=e.contextQuote?`<div class="msg">
+      <div class="msg-meta">${esc(e.contextSpeaker)}${e.contextAt?` · ${esc(e.contextAt)}`:""}</div>
+      <div class="msg-text">${esc(e.contextQuote)}</div></div>`:"";
+  const reply=`<div class="msg ${ctx?"reply ":""}${e.polarity==="positive"?"pos":"neg"}">
+      <div class="msg-meta">${ctx?"↳ ":""}${esc(e.speaker)}${e.at?` · ${esc(e.at)}`:""}</div>
+      <div class="msg-text">${esc(e.quote)}</div></div>`;
+  return `<div class="ev"><div class="ev-head">
+      <span class="badge ${e.polarity==="positive"?"badge-pos":"badge-neg"}">${e.polarity==="positive"?"긍정 근거":"부정 근거"}</span>
+      <span class="badge">${METRICS[e.metric]?.label||e.metric}</span>
+      ${e.elapsed?`<span class="badge ${e.polarity==="negative"?"badge-neg":""}">${esc(e.elapsed)}</span>`:""}
+      ${e.day?`<span class="ev-when">${esc(e.day)} ${e.hour>=0?e.hour+"시":""}</span>`:""}
+    </div>${ctx}${reply}<div class="ev-note">${esc(e.note)}</div></div>`;
+}
+
+function renderModal(){
+  if(!modal) return "";
+  const body = modal.html ? modal.html
+    : (modal.items?.length ? modal.items.map(evidenceItem).join("")
+      : `<div class="card-note">${esc(modal.emptyNote||"연결된 대화가 없습니다.")}</div>`);
+  return `<div class="modal-bg" onclick="closeModal()"><div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-head"><h3>${modal.title}</h3>
+        <button class="modal-close" onclick="closeModal()">×</button></div>
+      <div class="modal-sub">${modal.subtitle}</div>${body}</div></div>`;
+}
+
+/* ============================================================
+   소개
+   ============================================================ */
+
+const INTRO_STEPS = [
+  { t:"협업 잘하는 김과장님, 어떻게 일하는 걸까요?",
+    d:"나는 잘하고 있는 걸까요? 콜라브레인은 Slack 대화에서 <b>내가 일하는 방식</b>을 읽어서 보여드립니다." },
+  { t:"점수 옆에는 항상 근거가 붙습니다",
+    d:"얼마나 빨리 답했는지, 얼마나 알아듣기 쉽게 썼는지를 다섯 가지로 봅니다. 왜 그 점수인지 궁금하면 눌러보세요. <b>근거가 된 대화가 그대로 나옵니다.</b>" },
+  { t:"이번 주 나는 무슨 유형일까",
+    d:"일한 양과 방식에 따라 16가지 유형이 나옵니다. 지난주엔 「무한 중계기」였다가 이번 주엔 「여유로운 설계자」일 수도 있어요. 만난 유형은 도감에 쌓입니다." },
+  { t:"회사는 못 봅니다",
+    d:"기록은 <b>이 브라우저에만</b> 남습니다. 서버에 올라가지 않고 관리자 화면 같은 것도 없습니다. 분석할 때만 대화가 Anthropic에 한 번 갔다 옵니다." }
+];
+
+function renderIntro(){
+  const onboarding=!getSettings().onboarded;
+  const s=INTRO_STEPS[introStep];
+  if(onboarding){
+    const last=introStep===INTRO_STEPS.length-1;
+    return `<div class="card"><div class="intro-hero">
+        <h1>${esc(s.t)}</h1><p>${s.d}</p></div>
+        <div class="dots">${INTRO_STEPS.map((_,i)=>`<div class="dot ${i===introStep?"on":""}"></div>`).join("")}</div>
+      </div>
+      <div class="btn-row">
+        ${introStep>0?`<button class="btn" onclick="introStep--;render()">이전</button>`:""}
+        <button class="btn btn-primary" style="flex:1" onclick="${last?"finishOnboarding()":"introStep++;render()"}">
+          ${last?"시작하기":"다음"}</button>
+      </div>
+      <div class="footer-note"><button class="link" onclick="finishOnboarding()">건너뛰기</button></div>`;
+  }
+  return `<button class="back" onclick="go('home')">← 홈으로</button>
+    <div class="card"><div class="intro-hero"><h1>콜라브레인</h1>
+      <p>내가 일하는 방식, 나만 봅니다.</p></div></div>
+    <div class="card"><div class="card-title">어떤 앱인가요</div>
+      ${INTRO_STEPS.map((x,i)=>`<div class="intro-step"><div class="intro-num">${i+1}</div>
+        <div><div class="intro-t">${esc(x.t)}</div><div class="intro-d">${x.d}</div></div></div>`).join("")}</div>
+    <div class="card"><div class="card-title">무엇을 보고 점수를 매기나</div>
+      ${METRIC_KEYS.map(k=>`<div style="padding:11px 0;border-bottom:1px solid var(--line-2)">
+        <div style="font-size:13.5px;font-weight:700;margin-bottom:3px">${METRICS[k].label}</div>
+        <div style="font-size:12.5px;color:var(--text-mid);line-height:1.6">${METRICS[k].def}</div>
+        <div style="font-size:12px;color:var(--blue);margin-top:5px;font-weight:600">${METRICS[k].formula}</div>
+      </div>`).join("")}</div>
+    <div class="card"><div class="card-title">16개 유형</div>
+      <div class="dex">${TYPE_CODES.map(c=>`<div class="dex-cell" onclick="openTypeInfo('${c}')">
+        ${avatarHTML(c,"a-sm")}<div class="dex-name">${esc(TYPES[c].n)}</div>
+        <div class="dex-code">${c}</div></div>`).join("")}</div></div>`;
+}
+function finishOnboarding(){
+  const s=getSettings(); s.onboarded=true; setSettings(s);
+  go(getSettings().apiKey?"home":"settings");
+}
+
+/* ============================================================
+   설정 · 붙여넣기
+   ============================================================ */
+
+function renderSettings(){
+  const s=getSettings();
+  return `<div class="card"><div class="card-title">설정</div>
+      <label>Anthropic API 키</label>
+      <input type="password" id="setApiKey" value="${esc(s.apiKey)}" placeholder="sk-ant-...">
+      <div class="hint">이 브라우저에만 저장됩니다. 공용 PC에서는 쓰지 마세요.</div>
+      <label>내 이름</label>
+      <input type="text" id="setSelfName" value="${esc(s.selfName)}" placeholder="Slack에 뜨는 이름 그대로">
+      <div class="hint">대화에서 내 말을 골라내는 기준이 됩니다.</div>
+      <label>내 직무</label>
+      <select id="setJobRole"><option value="">선택 안 함</option>
+        ${JOB_ROLES.map(d=>`<option value="${d}"${s.jobRole===d?" selected":""}>${d}</option>`).join("")}</select>
+      <div class="hint">동료 평균을 추정할 때 참고합니다.</div>
+      <label>지금 이루고 싶은 것 (선택)</label>
+      <input type="text" id="setCareerGoal" value="${esc(s.careerGoal||"")}" placeholder="예: 시니어 기획자로 이직 준비">
+      <div class="hint">커리어 문서를 쓸 때, 다짐이 실제로 지켜졌는지 확인할 때 이 목표를 기준으로 판단합니다.</div>
+      <button class="btn btn-primary btn-full" id="saveSettingsBtn">저장</button></div>
+    <div class="card"><div class="card-title">샘플로 둘러보기</div>
+      <p class="cmt-desc" style="margin-bottom:12px">
+        2주치 분석이 끝난 상태로 채웁니다. <strong>API 키 없이</strong> 모든 화면을 볼 수 있어요.
+        이름은 김현주, 직무는 기획으로 설정됩니다.</p>
+      <button class="btn btn-full" onclick="loadSampleData()">샘플 데이터 넣기</button></div>
+    <div class="card"><div class="card-title">콜라브레인</div>
+      <p class="cmt-desc" style="margin-bottom:12px">무엇을 보고 점수를 매기는지, 16가지 유형이 뭔지 다시 볼 수 있습니다.</p>
+      <button class="btn btn-full" onclick="go('intro')">소개 보기</button></div>
+    <div class="card"><div class="card-title">기록 지우기</div>
+      <p class="cmt-desc">지금까지의 분석·약속·동료·트로피가 전부 사라집니다. 되돌릴 수 없습니다.</p>
+      <button class="btn danger btn-full" id="resetBtn">전부 삭제</button></div>`;
+}
+
+function renderPaste(){
+  const s=getSettings();
+  if(!s.apiKey||!s.selfName)
+    return `<div class="empty"><h2>설정 두 줄만 채워주세요</h2><p>API 키와 이름만 넣으면 바로 시작합니다.</p></div>
+      <div style="margin-top:14px;"><button class="btn btn-primary btn-full" onclick="go('settings')">설정하러 가기</button></div>`;
+  const blocks=pasteBlocks.map((b,i)=>`<div style="margin-bottom:16px;">
+      <div class="block-head"><span>${b.kind==="thread"?`스레드 ${i+1}`:"채널 대화"}</span>
+        ${pasteBlocks.length>1?`<a onclick="removeBlock(${i})">삭제</a>`:""}</div>
+      <textarea data-block="${i}" placeholder="[07/27 10:32] ${esc(s.selfName)}: 기획서 초안 오늘 중으로 공유드릴게요&#10;[07/27 11:05] 김OO: 넵 확인했습니다">${esc(b.text)}</textarea>
+    </div>`).join("");
+  return `<div class="card"><div class="card-title">대화 붙여넣기</div>
+      <div class="card-note" style="margin:-8px 0 16px">
+        한 번에 한 기간씩 넣어주세요. 3일치도 되고 2주치도 됩니다.
+        다만 <strong>지난달 것과 이번 주 것을 같이 넣으면</strong> 추이가 엉킵니다.</div>
+      ${blocks}
+      <div class="btn-row" style="margin-bottom:16px;">
+        <button class="btn" onclick="addBlock('thread')">+ 스레드 추가</button>
+        <button class="btn" onclick="addBlock('channel')">+ 채널 추가</button></div>
+      <div class="card-note" style="margin:-8px 0 16px">
+        직접 넣기 번거로우면 샘플로 해보세요 —
+        <button class="link" onclick="fillSampleChat('w1')">7월 넷째 주</button> ·
+        <button class="link" onclick="fillSampleChat('w2')">8월 첫째 주</button></div>
+      <label>이번엔 뭐 하느라 제일 바빴어요? (선택)</label>
+      <input type="text" id="selfPerception" value="${esc(selfPerceptionDraft)}" placeholder="예: 기획서 쓰느라 다 갔어요">
+      <div class="card-note" style="margin-bottom:14px;">
+        날짜랑 시간(<code>[07/27 10:32]</code>)까지 같이 복사하면 좋습니다.
+        응답 속도와 시간대 분포를 볼 수 있어요.</div>
+      ${errorMsg?`<div class="error-box">${esc(errorMsg)}</div>`:""}
+      ${busy?`<div class="loading"><div class="spinner"></div>읽는 중이에요</div>`:""}
+      <button class="btn btn-primary btn-full" id="analyzeBtn"${busy?" disabled":""}>${busy?"분석 중":"분석하기"}</button>
+    </div>`;
+}
+
+function addBlock(k){ syncBlocks(); pasteBlocks.push({kind:k,text:""}); render(); }
+function removeBlock(i){ syncBlocks(); pasteBlocks.splice(i,1);
+  if(!pasteBlocks.length) pasteBlocks=[{kind:"channel",text:""}]; render(); }
+function syncBlocks(){ document.querySelectorAll('textarea[data-block]').forEach(el=>{
+  const i=Number(el.dataset.block); if(pasteBlocks[i]) pasteBlocks[i].text=el.value; }); }
+
+async function runAnalysis(){
+  syncBlocks();
+  const settings=getSettings();
+  const sp=(document.getElementById('selfPerception')?.value||"").trim();
+  selfPerceptionDraft=sp;
+  const filled=pasteBlocks.filter(b=>b.text.trim().length>0);
+  if(filled.reduce((n,b)=>n+b.text.trim().length,0)<40){
+    errorMsg="너무 짧아요. 조금만 더 붙여넣어 주세요."; return render(); }
+  busy=true; errorMsg=""; render();
+  try{
+    persistAnalysis(await callClaude(settings,filled,sp), sp);
+    pasteBlocks=[{kind:"channel",text:""}]; selfPerceptionDraft=""; busy=false; go('home');
+  }catch(e){ busy=false; errorMsg=e.message||"분석하다 문제가 생겼어요."; render(); }
+}
+
+/* ============================================================
+   홈
+   ============================================================ */
+
+function renderTrophyBanner(){
+  const unseen=unseenTrophies();
+  if(!unseen.length) return "";
+  const rules=unseen.map(t=>TROPHY_RULES.find(r=>r.id===t.id)).filter(Boolean);
+  const retro=unseen.every(t=>t.retro);
+  return `<div class="trophy-banner">
+    <div class="tb-emojis">${rules.slice(0,4).map(r=>r.e).join("")}</div>
+    <div class="tb-text"><b>트로피 ${unseen.length}개</b>${retro?" 를 지난 기록에서 찾았어요":" 획득!"}<br>
+      <span style="color:var(--text-mid)">${rules.slice(0,2).map(r=>r.n).join(", ")}${rules.length>2?` 외 ${rules.length-2}개`:""}</span></div>
+    <button class="btn btn-sm" onclick="setRecordTab('trophies');markTrophiesSeen();go('records')">보러가기</button>
+  </div>`;
+}
+
+/* 다짐 검증은 예전엔 카드 안 링크를 기억해서 눌러야 나왔다.
+   새 기간이 들어올 때 자동으로 대조되므로, 그 결과도 트로피처럼 바로 알려준다. */
+function renderVerifyBanner(){
+  const unseen=unseenVerifications();
+  if(!unseen.length) return "";
+  const changed=unseen.filter(c=>c.verdict==="changed").length;
+  return `<div class="trophy-banner">
+    <div class="tb-emojis">${changed?"✅":"🔍"}</div>
+    <div class="tb-text"><b>다짐 확인 결과가 나왔어요</b><br>
+      <span style="color:var(--text-mid)">${unseen.length}개 다짐을 새 기록으로 대조해봤습니다</span></div>
+    <button class="btn btn-sm" onclick="markVerifySeen()">확인하기</button>
+  </div>`;
+}
+
+function renderTypeCard(latest, entries){
+  const code=typeCode(latest), rep=representativeType(entries);
+  const t=code?TYPES[code]:null;
+  return `<div class="card"><div class="type-card">
+      ${code?avatarHTML(code,"a-lg"):""}
+      <div style="flex:1">
+        ${code?`<div class="type-code">${code}</div>`:""}
+        <div class="type-label">${t?`${t.e} ${esc(t.n)}`:esc(latest.type)}</div>
+        <p class="type-sub">${esc(latest.typeReason)}</p>
+        <div class="coverage">${esc(coverage(entries))}</div>
+      </div></div>
+    ${rep&&entries.length>=2&&rep!==code?`<div class="rep-row">${avatarHTML(rep,"a-sm")}
+      <div class="rep-text">요즘의 나는 ${TYPES[rep].e} <b>${esc(TYPES[rep].n)}</b>입니다.</div>
+      </div>`:""}
+    ${code?`<div class="card-note">유형은 기간마다 바뀝니다. 만난 유형은 기록 › 도감에 쌓여요.</div>`:""}
+  </div>`;
+}
+
+function renderSummary(latest, prev, entries){
+  const cur=METRIC_KEYS.map(k=>({k,v:latest.scores?.[k]??0}));
+  const hi=cur.reduce((a,b)=>b.v>a.v?b:a), lo=cur.reduce((a,b)=>b.v<a.v?b:a);
+  let up=null,down=null;
+  if(prev){ const d=METRIC_KEYS.map(k=>({k,d:(latest.scores?.[k]??0)-(prev.scores?.[k]??0)}));
+    up=d.reduce((a,b)=>b.d>a.d?b:a); down=d.reduce((a,b)=>b.d<a.d?b:a); }
+  const tile=(l,n,s)=>`<div class="tile"><div class="tile-label">${l}</div>
+    <div class="tile-value">${n}</div><div class="tile-sub">${s}</div></div>`;
+  const total=avgScore(latest.scores), ptotal=prev?avgScore(prev.scores):null;
+  const bench=latest.benchmark?avgScore(latest.benchmark):null;
+  return `<div class="card">
+    <div class="card-title">요약<span style="font-size:12px;font-weight:500;color:var(--text-low)">${esc(entryLabel(latest))}</span></div>
+    <div class="hero-line"><span class="hero-num">${total}</span>${deltaBadge(total,ptotal)}
+      <span style="margin-left:auto;font-size:12.5px;color:var(--text-mid)">부하 ${latest.load??"—"}</span></div>
+    <div class="track"><div class="fill" style="width:${total}%"></div>
+      ${bench!=null?`<div class="bench-mark" style="left:calc(${bench}% - 1px)"></div>`:""}</div>
+    ${bench!=null?`<div class="card-note">회색 눈금이 동료 평균(추정) ${bench}점입니다.</div>`:""}
+    <div class="tiles">
+      ${tile("최고 지표",METRICS[hi.k].label,`${hi.v}점`)}
+      ${tile("최저 지표",METRICS[lo.k].label,`${lo.v}점`)}
+      ${up?tile("상승폭 최대",METRICS[up.k].label,up.d>0?`+${up.d}점`:"변동없음"):tile("상승폭 최대","—","비교할 지난 기간 없음")}
+      ${down?tile("하락폭 최대",METRICS[down.k].label,down.d<0?`${down.d}점`:"변동없음"):tile("하락폭 최대","—","비교할 지난 기간 없음")}
+    </div>
+    <div style="margin-top:16px">
+      <div class="subhead" style="display:flex;justify-content:space-between;align-items:center">
+        <span>지금까지 흐름</span><button class="link" onclick="go('trend')">자세히 보기 ›</button></div>
+      ${sparkline(entries)}
+    </div></div>`;
+}
+
+function renderScores(latest, prev){
+  const bench=latest.benchmark;
+  const rows=METRIC_KEYS.map(k=>{
+    const cur=latest.scores?.[k]??0, p=prev?prev.scores?.[k]:undefined, b=bench?.[k];
+    const cav=(k==="responsiveness"&&latest.hasTimestamps===false)?`<span class="score-caveat"> *</span>`:"";
+    return `<div class="score-row" onclick="openMetric('${k}')">
+      <div class="score-name">${METRICS[k].label}${cav}</div>
+      <div class="track" style="flex:1"><div class="fill" style="width:${cur}%;background:${METRICS[k].color}"></div>
+        ${b!=null?`<div class="bench-mark" style="left:calc(${b}% - 1px)"></div>`:""}</div>
+      <div class="score-num">${cur}</div><div class="score-delta">${deltaBadge(cur,p)}</div>
+      <div class="score-chev">›</div></div>`;
+  }).join("");
+  return `<div class="card"><div class="card-title">협업 항목별 점수</div>${rows}
+    ${latest.hasTimestamps===false?`<div class="card-note">* 시간이 안 적혀 있어서 응답 적시성은 답장률만으로 봤습니다.</div>`:""}
+    <div class="card-note">지표를 누르면 왜 그 점수인지 나옵니다.</div>
+    ${bench?`<div class="note-box">회색 세로선이 동료 평균(추정)입니다. ${BENCH_DISCLAIMER}${
+      latest.benchmarkBasis?`<br><br>추정 근거: ${esc(latest.benchmarkBasis)}`:""}</div>`:""}</div>`;
+}
+
+function renderInsights(latest){
+  if(!latest.insights?.length) return "";
+  const pos=latest.insights.filter(i=>i.polarity==="positive"), neg=latest.insights.filter(i=>i.polarity==="negative");
+  const row=i=>`<div class="ins"><div class="ins-icon ${i.polarity==="positive"?"ins-pos":"ins-neg"}">${i.polarity==="positive"?"✦":"✕"}</div>
+    <div class="ins-text">${esc(i.text)}</div></div>`;
+  return `<div class="card"><div class="card-title">협업 인사이트</div>
+    ${pos.length?`<div class="subhead">잘 되고 있는 것</div>${pos.map(row).join("")}`:""}
+    ${neg.length?`<div class="subhead" style="margin-top:14px">걸리는 것</div>${neg.map(row).join("")}`:""}</div>`;
+}
+
+/* 홈에서는 TOP 1만 요약. 원인·개선방향 전체는 지표 상세에서. */
+function renderTopImprovement(latest){
+  const im=latest.improvements?.[0]; if(!im) return "";
+  return `<div class="card"><div class="card-title">여기부터 보세요</div>
+    <div class="imp"><div class="imp-head">
+      <span class="imp-rank">개선 TOP 1</span>
+      <span class="imp-metric">${METRICS[im.metric]?.label||im.metric}</span>
+      <span style="font-size:12.5px;color:var(--text-mid);font-variant-numeric:tabular-nums">${latest.scores?.[im.metric]??"—"}점</span>
+      <button class="imp-more" onclick="openMetric('${im.metric}')">어떻게 하면 되나 ›</button></div>
+      <div class="imp-block"><div class="imp-label">문제</div><div class="imp-body">${esc(im.problem)}</div></div>
+    </div>
+    ${latest.improvements.length>1?`<div class="card-note">개선 제안이 ${latest.improvements.length}개 있어요. 각 지표 화면에서 볼 수 있습니다.</div>`:""}
+  </div>`;
+}
+
+function renderCommitmentCard(){
+  const open=getCommitments().filter(c=>["proposed","accepted","observing"].includes(c.status))
+    .sort((a,b)=>{ if(a.deadline&&b.deadline) return new Date(a.deadline)-new Date(b.deadline);
+      if(a.deadline) return -1; if(b.deadline) return 1;
+      return new Date(b.createdAt)-new Date(a.createdAt); });
+  if(!open.length) return "";
+  const streak=verifyStreak();
+  return `<div class="card"><div class="card-title">해볼 것
+      ${streak>=2?`<span class="badge badge-pos" style="font-weight:600">🔥 연속 ${streak}번 확인됨</span>`:""}</div>${open.map(c=>{
+    const badge=c.source==="self_promise"?`<span class="badge badge-promise">내 약속</span>`:`<span class="badge badge-exp">제안</span>`;
+    let due="";
+    if(c.deadline){ const d=daysUntil(c.deadline);
+      due=`<span class="badge ${d<=1?"badge-due":""}">${d<0?`${Math.abs(d)}일 지남`:d===0?"오늘까지":`${d}일 남음`}</span>`; }
+    const who=c.relatedColleague?`<span class="badge">${esc(c.relatedColleague)}</span>`:"";
+    const script=c.scriptLine?`<div class="msg" style="display:flex;align-items:center;gap:8px;justify-content:space-between">
+      <span class="msg-text" style="flex:1">${esc(c.scriptLine)}</span>
+      <button class="btn btn-sm" style="flex:0 0 auto" data-script="${esc(c.scriptLine)}" onclick="copyScriptLine(this)">복사</button></div>`:"";
+    const act=c.status==="proposed"
+      ? `<div class="btn-row"><button class="btn btn-primary btn-sm" onclick="setCommitmentStatus('${c.id}','accepted')">해볼게요</button>
+         <button class="btn btn-sm" onclick="setCommitmentStatus('${c.id}','observing')">그냥 지켜볼래요</button></div>`
+      : `<div class="cmt-status">${c.status==="accepted"?"✓ 해보기로 했어요":"✓ 이번엔 그냥 지켜보기로 했어요"}</div>
+         <div class="btn-row" style="margin-top:9px;">
+           <button class="btn btn-sm" onclick="setCommitmentStatus('${c.id}','done')">완료</button>
+           <button class="btn btn-sm" onclick="setCommitmentStatus('${c.id}','missed')">못 했어요</button></div>
+         ${renderVerifyBlock(c)}`;
+    return `<div class="cmt"><div class="cmt-head">${badge}${due}${who}</div>
+      <p class="cmt-title">${esc(c.title)}</p><p class="cmt-desc">${esc(c.description)}</p>${script}${act}</div>`;
+  }).join("")}</div>`;
+}
+function copyScriptLine(btn){
+  const text=btn.dataset.script||"";
+  const done=ok=>{ const orig=btn.textContent; btn.textContent=ok?"복사됨 ✓":"복사 실패";
+    setTimeout(()=>{ btn.textContent=orig; }, 1500); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>done(true)).catch(()=>done(false));
+    return;
+  }
+  // Chrome은 file://에서 Clipboard API 자체를 노출 안 한다(localStorage와 같은 이유).
+  // 구식 execCommand로 폴백한다.
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    const ok=document.execCommand("copy");
+    document.body.removeChild(ta);
+    done(ok);
+  }catch(e){ done(false); }
+}
+/* 자기보고(완료/못함)와 별개로, 이후 기간 근거로 실제 행동 변화를 확인한다. */
+function renderVerifyBlock(c){
+  if(verifyingIds.has(c.id)) return `<div class="loading" style="margin-top:9px"><div class="spinner"></div>로그와 대조하는 중</div>`;
+  if(c.verdict){
+    const cls=c.verdict==="changed"?"badge-pos":c.verdict==="not_yet"?"badge-neg":"";
+    return `<div style="margin-top:9px"><span class="badge ${cls}">${VERDICT_LABEL[c.verdict]}</span>
+      <p class="cmt-desc" style="margin-top:6px">${esc(c.verifyNote)}</p>
+      <button class="link" onclick="verifyCommitment('${c.id}')">다시 확인</button></div>`;
+  }
+  if(c.verifyNote) return `<div class="card-note" style="margin-top:9px">${esc(c.verifyNote)}</div>`;
+  return `<div style="margin-top:9px"><button class="link" onclick="verifyCommitment('${c.id}')">실제로 바뀌었는지 로그로 확인 →</button></div>`;
+}
+function setCommitmentStatus(id,st){
+  const l=getCommitments(); const c=l.find(x=>x.id===id);
+  if(c){ c.status=st; if(st==="done"||st==="missed") c.completedAt=new Date().toISOString(); }
+  setCommitments(l); evaluateTrophies(); render();
+}
+
+function renderHome(){
+  const entries=getEntries();
+  if(!entries.length)
+    return `<div class="empty"><h2>아직 볼 게 없네요</h2>
+      <p>Slack에서 이번 주 대화를 복사해<br>붙여넣어 보세요. 1분이면 됩니다.</p></div>
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn btn-primary" style="flex:1" onclick="go('paste')">대화 붙여넣기</button>
+        <button class="btn" onclick="loadSampleData()">샘플로 둘러보기</button></div>
+      <div class="footer-note"><button class="link" onclick="go('intro')">콜라브레인이 뭐죠?</button></div>`;
+
+  const latest=entries[entries.length-1], prev=entries.length>1?entries[entries.length-2]:null;
+  const stale=daysAgo(latest.periodEnd||latest.date);
+
+  return `${renderTrophyBanner()}
+    ${renderVerifyBanner()}
+    ${stale>=10?`<div class="stale-banner">마지막 기록이 ${stale}일 전이네요. 요즘 대화도 넣어볼까요?</div>`:""}
+    ${renderChronicWeaknessBanner(entries)}
+    ${renderTypeCard(latest,entries)}
+    ${renderCareerNudge()}
+    ${renderSummary(latest,prev,entries)}
+    <div class="card"><div class="card-title">이번 기간은</div>
+      <p class="narrative">${esc(latest.narrative)}</p>
+      <div class="why">${esc(latest.whyThisMatters)}</div>
+      ${latest.selfPerceptionNote?`<div class="gap-note">${esc(latest.selfPerceptionNote)}</div>`:""}</div>
+    ${renderScores(latest,prev)}
+    ${renderTopImprovement(latest)}
+    ${renderMorningBriefingCard()}
+    ${renderCommitmentCard()}
+    <div style="margin-top:6px;"><button class="btn btn-primary btn-full" onclick="go('paste')">다른 기간 분석하기</button></div>
+    <div class="footer-note">더 자세한 분석은 추이 탭에, 동료별 관계는 동료 탭에 있습니다.</div>`;
+}
+
+/* ============================================================
+   지표 상세
+   ============================================================ */
+
+function renderMetric(){
+  const entries=getEntries();
+  const latest=entries[entries.length-1], prev=entries.length>1?entries[entries.length-2]:null;
+  const k=selectedMetric, m=METRICS[k];
+  if(!latest||!m) return renderHome();
+  const cur=latest.scores?.[k]??0, parts=latest.scoreBreakdown?.[k]||null, b=latest.benchmark?.[k];
+  const cols=["#3d6ef7","#3fb98a","#f0b429"];
+  const compRows=parts?parts.map((p,j)=>`<div class="comp-row">
+      <div class="comp-name">${esc(p.name)}</div><div class="comp-weight">${p.weight}%</div>
+      <div class="track" style="flex:1"><div class="fill" style="width:${clamp(p.value,0,100)}%;background:${cols[j%cols.length]}"></div></div>
+      <div class="comp-num">${p.value}</div></div>`).join("")
+    :`<div class="card-note">예전 버전으로 분석한 기록이라 항목별 점수가 없습니다. 다시 분석하면 채워져요.</div>`;
+  const evAll=(latest.evidence||[]).filter(e=>e.metric===k);
+  const ev=evidenceFilter==="all"?evAll:evAll.filter(e=>e.polarity===evidenceFilter);
+  const evHtml=ev.length?ev.map(evidenceItem).join("")
+    :`<div class="card-note">${evAll.length?"여기 해당하는 건 없네요.":"예전 버전으로 분석한 기록이라 근거가 없습니다. 다시 분석하면 나와요."}</div>`;
+  const imp=(latest.improvements||[]).find(x=>x.metric===k);
+
+  return `<button class="back" onclick="go('home')">← 홈으로</button>
+    <div class="seg" style="margin-bottom:14px;">
+      ${METRIC_KEYS.map(x=>`<button class="${x===k?"on":""}" onclick="openMetric('${x}')">${METRICS[x].label}</button>`).join("")}</div>
+    <div class="card">
+      <div class="metric-hero"><h2>${m.label}</h2><div class="big">${cur}</div></div>
+      <p class="metric-def">${m.def}</p>
+      <div style="display:flex;gap:14px;align-items:center;margin-top:10px;flex-wrap:wrap">
+        ${prev?`<span style="font-size:12.5px;color:var(--text-mid)">지난 기간 ${prev.scores?.[k]??0}점 대비</span>${deltaBadge(cur,prev.scores?.[k]??0)}`:""}
+        ${b!=null?`<span style="font-size:12.5px;color:var(--text-mid)">동료 평균(추정) ${b}점</span>`:""}</div>
+      <div class="formula">${m.formula}</div></div>
+    <div class="card"><div class="card-title">구성요소별 점수</div>${compRows}
+      <div class="card-note">위 항목들을 각각 매긴 뒤 가중치대로 합친 값이 ${cur}점입니다.</div></div>
+    <div class="card"><div class="card-title">평가항목별 점수 추이</div>${componentBars(entries,k)}</div>
+    ${imp?`<div class="card"><div class="card-title">개선 제안</div><div class="imp">
+      <div class="imp-block"><div class="imp-label">문제</div><div class="imp-body">${esc(imp.problem)}</div></div>
+      <div class="imp-block"><div class="imp-label">원인</div><div class="imp-body"><ul>${(imp.causes||[]).map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div></div>
+      <div class="imp-block"><div class="imp-label">개선방향</div><div class="imp-body"><ul>${(imp.actions||[]).map(a=>`<li>${esc(a)}</li>`).join("")}</ul></div></div>
+    </div></div>`:""}
+    <div class="card"><div class="card-title"><span>근거가 된 대화</span>
+        <span class="seg">
+          <button class="${evidenceFilter==="all"?"on":""}" onclick="setEvidenceFilter('all')">전체</button>
+          <button class="${evidenceFilter==="positive"?"on":""}" onclick="setEvidenceFilter('positive')">긍정</button>
+          <button class="${evidenceFilter==="negative"?"on":""}" onclick="setEvidenceFilter('negative')">부정</button>
+        </span></div>${evHtml}</div>`;
+}
+
+/* ============================================================
+   홈에 얹는 추가 기능 카드 — 성윤님 설계 ②④⑦⑨⑩
+   ⚠️ 내부용 메모: 실제 판정 로직 없음. 데이터는 고정된 예시이며 사용자가 넣은
+   실제 기록과 무관하다. UI 완성도를 보여주기 위한 목적으로 "개발 예정" 표시를
+   뺐다 — 화면·코드 밖으로 이 사실이 새어나가지 않게 주의할 것.
+   (⑤ 커리어 로그는 실제 생성 기능으로 교체됨 — renderCareerLab 참고)
+   ============================================================ */
+
+function soon(title, why, body){
+  return `<div class="card soon-card">
+    <div class="card-title">${title}</div>
+    <p class="soon-why">${why}</p>
+    <div class="soon-body">${body}</div></div>`;
+}
+
+/* 카테고리별로 각자 어울리는 탭에 심는다 — "예정"이었다는 이유로 한데 묶지 않는다.
+   ②아침브리핑→홈(지금 할 일) ④번아웃→추이(평소 대비 변화) ⑦관계온도 ⑨인정수지 ⑩재개브리핑→동료(특정 동료와의 관계) */
+
+function renderMorningBriefingCard(){
+  return soon("아침 브리핑",
+    "매일 아침 미응답 메시지와 발신 타이밍을 봇 DM으로 받습니다.",
+    `<div class="subhead">아직 답 안 한 것 3건</div>
+     <div class="sig"><div class="sig-dot" style="background:var(--red)"></div><div>
+       <div class="sig-t">정민우 · 4시간 25분 경과</div>
+       <div class="sig-d">"어제 회의에서 나온 정산 자료는 언제 받을 수 있을까요?"</div></div></div>
+     <div class="sig"><div class="sig-dot" style="background:var(--yellow)"></div><div>
+       <div class="sig-t">박서준 · 1시간 12분 경과</div>
+       <div class="sig-d">"스키마 아직 못 받았습니다"</div></div></div>
+     <div class="sig"><div class="sig-dot" style="background:var(--text-low)"></div><div>
+       <div class="sig-t">이하늘 · 22분 경과</div>
+       <div class="sig-d">"금요일 오후는 다른 건이 잡혀 있어서 월요일부터 가능합니다"</div></div></div>
+     <div class="subhead" style="margin-top:14px">지금 보내면 좋은 사람</div>
+     <div class="kv"><span class="kv-k">박서준</span><span class="kv-v">오전 10~12시 · 지금 적기</span></div>
+     <div class="kv"><span class="kv-k">강수아</span><span class="kv-v">오후 늦게 답이 빠름</span></div>`);
+}
+
+function renderBurnoutCard(){
+  return soon("번아웃·과부하 조기 감지",
+    "평소의 나와 비교해 리듬이 달라졌는지 봅니다. 6주 이상 기록이 쌓여야 판정할 수 있습니다.",
+    `<div class="stale-banner" style="margin:0 0 12px;text-align:left">
+       최근 평소와 다른 리듬이 이어지고 있어요. 잠깐 확인해보실래요?</div>
+     <div class="sig"><div class="sig-dot" style="background:var(--red)"></div><div>
+       <div class="sig-t">심야 발신 0건 → 3건</div>
+       <div class="sig-d">밤 10시 이후 메시지가 지난 기간엔 없었습니다.</div></div></div>
+     <div class="sig"><div class="sig-dot" style="background:var(--red)"></div><div>
+       <div class="sig-t">평균 응답 22분 → 1시간 48분</div>
+       <div class="sig-d">답하는 속도가 5배 가까이 느려졌습니다.</div></div></div>
+     <div class="sig"><div class="sig-dot" style="background:var(--yellow)"></div><div>
+       <div class="sig-t">부하 41 → 78</div>
+       <div class="sig-d">주고받은 메시지 양이 크게 늘었습니다.</div></div></div>
+     <div class="card-note">진단이 아니라 관찰입니다. 한 달에 한 번만 뜹니다.</div>`);
+}
+
+/* ============================================================
+   나의 강점·약점 — 전 기간 평균으로 본 지표별 요약 (API 호출 없이 계산)
+   ============================================================ */
+
+function repEvidenceNote(entries, metric, polarity){
+  for(let i=entries.length-1;i>=0;i--){
+    const ev=(entries[i].evidence||[]).find(e=>e.metric===metric && e.polarity===polarity);
+    if(ev) return ev.note||ev.quote||null;
+  }
+  return null;
+}
+function computeStrengthsWeaknesses(entries){
+  if(!entries.length) return null;
+  const avg={};
+  METRIC_KEYS.forEach(k=>{
+    const vals=entries.map(e=>e.scores?.[k]).filter(v=>v!=null);
+    avg[k]=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):null;
+  });
+  const ranked=METRIC_KEYS.filter(k=>avg[k]!=null).map(k=>({k,avg:avg[k]})).sort((a,b)=>b.avg-a.avg);
+  const recent=entries.slice(-3);
+  const chronic=METRIC_KEYS.filter(k=>recent.length>=2 && recent.every(e=>(e.scores?.[k]??100)<60));
+  return { avg, strengths:ranked.slice(0,2), weaknesses:ranked.slice(-2).reverse(), chronic };
+}
+/* 강점·약점 카드는 기록 › 커리어 로그 안에 있어서, 반복되는 약점 신호는
+   거기까지 안 들어가는 사람에게는 안 보였다. 홈에도 짧게 띄운다. */
+function renderChronicWeaknessBanner(entries){
+  const sw=computeStrengthsWeaknesses(entries);
+  if(!sw||!sw.chronic.length) return "";
+  return `<div class="stale-banner">${sw.chronic.map(k=>METRICS[k].label).join(", ")}가 최근 계속 낮아요.
+    <button class="link" onclick="setRecordTab('career');go('records')">자세히 보기 →</button></div>`;
+}
+function renderStrengthsCard(){
+  const entries=getEntries();
+  const sw=computeStrengthsWeaknesses(entries); if(!sw) return "";
+  const row=(k,avg,polarity)=>{
+    const note=repEvidenceNote(entries,k,polarity);
+    return `<div class="sig"><div class="sig-dot" style="background:${polarity==="positive"?"var(--green)":"var(--red)"}"></div><div>
+      <div class="sig-t">${METRICS[k].label} · 평균 ${avg}점</div>
+      ${note?`<div class="sig-d">${esc(note)}</div>`:""}</div></div>`;
+  };
+  return `<div class="card">
+    <div class="card-title">나의 강점과 약점</div>
+    <p class="card-note" style="margin:-6px 0 14px">지금까지 ${entries.length}개 기간 평균으로 봤습니다. 아래 문서를 만들 때도 이 근거를 참고합니다.</p>
+    <div class="subhead">강점</div>${sw.strengths.map(s=>row(s.k,s.avg,"positive")).join("")}
+    <div class="subhead" style="margin-top:14px">약점</div>${sw.weaknesses.map(w=>row(w.k,w.avg,"negative")).join("")}
+    ${sw.chronic.length?`<div class="stale-banner" style="margin-top:14px;text-align:left">
+      ${sw.chronic.map(k=>METRICS[k].label).join(", ")}는 최근 기간에도 계속 낮습니다. 아래 "해볼 것"에서 다짐을 만들어보는 게 좋겠어요.</div>`:""}
+    <div class="card-note" style="margin-top:10px">지표를 자세히 보려면 <button class="link" onclick="go('trend')">추이 탭</button>에서 눌러보세요.</div>
+  </div>`;
+}
+
+/* ============================================================
+   내 자료함 — Slack 로그로 안 잡히는 것을 사용자가 직접 채워 넣는다.
+   텍스트 붙여넣기와 텍스트 파일(.txt/.md/.csv) 업로드는 실제로 동작한다.
+   ============================================================ */
+
+let materialError="", matTitleDraft="", matContentDraft="";
+
+function addCareerMaterial(){
+  const title=(document.getElementById('matTitle')?.value||"").trim();
+  const pasted=(document.getElementById('matContent')?.value||"").trim();
+  const file=document.getElementById('matFile')?.files?.[0];
+  matTitleDraft=title; matContentDraft=pasted;
+  const finish=(content)=>{
+    if(!content){ materialError="추가할 내용을 입력하거나 파일을 선택해주세요."; return render(); }
+    const list=getCareerMaterials();
+    list.push({ id:uid(), title:title||(file?file.name:"제목 없음"), content:content.slice(0,8000), createdAt:new Date().toISOString() });
+    setCareerMaterials(list); materialError=""; matTitleDraft=""; matContentDraft=""; render();
+  };
+  if(file){
+    const reader=new FileReader();
+    reader.onload=()=>finish(String(reader.result||""));
+    reader.onerror=()=>{ materialError="파일을 읽지 못했어요. 텍스트로 붙여넣어 주세요."; render(); };
+    reader.readAsText(file);
+  } else finish(pasted);
+}
+function deleteCareerMaterial(id){
+  setCareerMaterials(getCareerMaterials().filter(m=>m.id!==id)); render();
+}
+function renderMaterialsCard(){
+  const list=getCareerMaterials();
+  return `<div class="card">
+    <div class="card-title">내 자료함<span style="font-size:13px;color:var(--text-mid)">${list.length}개</span></div>
+    <p class="card-note" style="margin:-6px 0 14px">Slack 로그로는 안 잡히는 것 — 리더십 경험, 수상, 자격증, 이전 프로젝트 같은 걸 넣어두면 문서를 만들 때 같이 참고합니다.</p>
+    ${list.length?list.map(m=>`<div class="hist"><div class="hist-type" style="flex:1">${esc(m.title)}</div>
+      <button class="modal-close" style="font-size:14px" onclick="deleteCareerMaterial('${m.id}')">×</button></div>`).join(""):""}
+    <label>제목 (선택)</label><input type="text" id="matTitle" value="${esc(matTitleDraft)}" placeholder="예: 사내 해커톤 수상">
+    <label>내용</label><textarea id="matContent" style="min-height:80px" placeholder="여기에 붙여넣거나, 아래에서 파일을 선택하세요">${esc(matContentDraft)}</textarea>
+    <label>또는 파일로 넣기</label>
+    <input type="file" id="matFile" accept=".txt,.md,.csv">
+    <div class="hint">지금은 텍스트(.txt/.md/.csv) 파일만 실제로 읽습니다. PDF·워드는 내용을 복사해서 위에 붙여넣어 주세요.</div>
+    ${materialError?`<div class="error-box">${esc(materialError)}</div>`:""}
+    <button class="btn btn-full" onclick="addCareerMaterial()">자료함에 추가</button>
+  </div>`;
+}
+
+/* 홈에서 커리어 문서 기능을 아직 안 써본 사람에게만 한 번 알려준다.
+   기록 › 커리어 로그 세 번째 클릭 뒤에 숨어 있어서 발견성이 낮았던 문제 대응. */
+function renderCareerNudge(){
+  if(getCareerDocs().length) return "";
+  return `<div class="card" style="border:1px dashed var(--blue)">
+    <div class="card-title">근거로 이력서·자소서도 만들 수 있어요</div>
+    <p class="card-note" style="margin:-4px 0 12px">지금까지 쌓인 협업 기록으로 이력서 항목, 자소서 답변, 면접 예상 답변 초안을 만듭니다.</p>
+    <button class="btn btn-primary btn-full" onclick="setRecordTab('career');go('records')">커리어 문서 만들어보기 →</button>
+  </div>`;
+}
+
+/* ============================================================
+   커리어 문서 랩 — 근거 기반 이력서·자소서·면접 답변 초안 생성 (실제 동작)
+   ============================================================ */
+
+let careerDocType="resume", careerBusy=false, careerError="", editingDocId=null;
+let careerCompanyDraft="", careerQuestionDraft="";
+
+function setCareerDocType(k){
+  careerDocType=k; careerError=""; careerCompanyDraft=""; careerQuestionDraft=""; render();
+}
+
+async function runCareerDoc(){
+  const company=(document.getElementById('careerCompany')?.value||"").trim();
+  const question=(document.getElementById('careerQuestion')?.value||"").trim();
+  careerCompanyDraft=company; careerQuestionDraft=question;
+  if(careerDocType==="cover" && !question){ careerError="자소서 문항을 입력해주세요."; return render(); }
+  if(careerDocType==="growth" && !buildGrowthContext()){
+    careerError="아직 검증된 다짐이 없어요. 먼저 '해볼 것'에서 다짐을 진행해보세요."; return render();
+  }
+  careerBusy=true; careerError=""; render();
+  try{
+    const doc=await generateCareerDoc(careerDocType,{company,question});
+    const docs=getCareerDocs();
+    docs.push({ id:uid(), kind:careerDocType, title:doc.title, content:doc.content,
+      highlights:doc.highlights||[], company, question, createdAt:new Date().toISOString() });
+    careerCompanyDraft=""; careerQuestionDraft="";
+    setCareerDocs(docs);
+    careerBusy=false; render();
+  }catch(e){ careerBusy=false; careerError=e.message||"만들다 문제가 생겼어요."; render(); }
+}
+function careerDocModalBody(doc){
+  if(editingDocId===doc.id) return `<textarea id="docEditArea" style="min-height:220px">${esc(doc.content)}</textarea>
+      <div class="btn-row" style="margin-top:10px">
+        <button class="btn btn-primary btn-sm" onclick="saveCareerDocEdit('${doc.id}')">저장</button>
+        <button class="btn btn-sm" onclick="cancelCareerDocEdit('${doc.id}')">취소</button></div>`;
+  if(regeneratingDocId===doc.id) return `<p class="intro-d" style="white-space:pre-wrap">${esc(doc.content)}</p>
+      <div class="loading" style="margin-top:12px"><div class="spinner"></div>자료함 반영해서 다시 만드는 중이에요</div>`;
+  const materials=getCareerMaterials();
+  return `<p class="intro-d" style="white-space:pre-wrap">${esc(doc.content)}</p>
+      ${doc.highlights?.length?`<div class="subhead" style="margin-top:14px">사용한 근거</div>
+        ${doc.highlights.map(h=>`<div class="kv"><span class="kv-k">${esc(h)}</span></div>`).join("")}`:""}
+      <div class="card-note" style="margin-top:12px">Slack 원문은 그대로 쓰지 않고 역량 서술로 바꿔 넣었습니다. 제출 전 꼭 본인이 검토·수정하세요.
+        ${doc.editedAt?" 직접 수정한 버전입니다.":""}${doc.regeneratedAt?" 자료함 반영해서 다시 만든 버전입니다.":""}</div>
+      ${regenError?`<div class="error-box" style="margin-top:10px">${esc(regenError)}</div>`:""}
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn btn-sm" onclick="startCareerDocEdit('${doc.id}')">수정</button>
+        <button class="btn btn-sm" onclick="downloadCareerDoc('${doc.id}')">다운로드</button>
+      </div>
+      ${materials.length?`<div style="margin-top:10px"><button class="link" onclick="regenerateCareerDoc('${doc.id}')">자료함(${materials.length}개) 반영해서 다시 만들기 →</button></div>`:""}`;
+}
+let regeneratingDocId=null, regenError="";
+function regenerateCareerDoc(id){
+  const doc=getCareerDocs().find(d=>d.id===id); if(!doc) return;
+  if(doc.editedAt) askConfirm("직접 수정한 내용이 있어요. 자료를 반영해 새로 만들면 그 수정 내용은 사라집니다. 계속할까요?",
+    ()=>doRegenerateCareerDoc(id));
+  else doRegenerateCareerDoc(id);
+}
+async function doRegenerateCareerDoc(id){
+  const doc=getCareerDocs().find(d=>d.id===id); if(!doc) return;
+  regeneratingDocId=id; regenError="";
+  modal={ title:doc.title, subtitle:`${DOC_TYPES[doc.kind]?.label||doc.kind} · ${fmtTick(doc.createdAt)}`, html:careerDocModalBody(doc) };
+  render();
+  try{
+    const fresh=await generateCareerDoc(doc.kind,{company:doc.company,question:doc.question});
+    const docs=getCareerDocs(); const d2=docs.find(x=>x.id===id);
+    if(d2){ d2.title=fresh.title; d2.content=fresh.content; d2.highlights=fresh.highlights||[];
+      delete d2.editedAt; d2.regeneratedAt=new Date().toISOString(); setCareerDocs(docs); }
+    regeneratingDocId=null;
+    const updated=getCareerDocs().find(x=>x.id===id);
+    modal={ title:updated.title, subtitle:`${DOC_TYPES[updated.kind]?.label||updated.kind} · ${fmtTick(updated.createdAt)}`, html:careerDocModalBody(updated) };
+    render();
+  }catch(e){
+    regeneratingDocId=null; regenError=e.message||"다시 만들다 문제가 생겼어요.";
+    const cur=getCareerDocs().find(x=>x.id===id);
+    if(cur) modal={ title:cur.title, subtitle:`${DOC_TYPES[cur.kind]?.label||cur.kind} · ${fmtTick(cur.createdAt)}`, html:careerDocModalBody(cur) };
+    render();
+  }
+}
+function openCareerDoc(id){
+  editingDocId=null;
+  const doc=getCareerDocs().find(d=>d.id===id); if(!doc) return;
+  modal={ title:doc.title, subtitle:`${DOC_TYPES[doc.kind]?.label||doc.kind} · ${fmtTick(doc.createdAt)}`, html:careerDocModalBody(doc) };
+  render();
+}
+function startCareerDocEdit(id){
+  editingDocId=id;
+  const doc=getCareerDocs().find(d=>d.id===id); if(!doc) return;
+  modal={ ...modal, html:careerDocModalBody(doc) }; render();
+}
+function cancelCareerDocEdit(id){
+  editingDocId=null;
+  const doc=getCareerDocs().find(d=>d.id===id); if(!doc) return;
+  modal={ ...modal, html:careerDocModalBody(doc) }; render();
+}
+function saveCareerDocEdit(id){
+  const val=document.getElementById('docEditArea')?.value ?? "";
+  const list=getCareerDocs(); const doc=list.find(d=>d.id===id);
+  if(!doc) return;
+  doc.content=val; doc.editedAt=new Date().toISOString();
+  setCareerDocs(list); editingDocId=null;
+  modal={ ...modal, html:careerDocModalBody(doc) }; render();
+}
+function downloadCareerDoc(id){
+  const doc=getCareerDocs().find(d=>d.id===id); if(!doc) return;
+  const blob=new Blob([doc.content], {type:"text/plain;charset=utf-8"});
+  const url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download=`${(doc.title||"초안").replace(/[\\/:*?"<>|]/g,"")}.txt`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+function deleteCareerDoc(id){
+  askConfirm("이 초안을 지울까요?", ()=>{ setCareerDocs(getCareerDocs().filter(d=>d.id!==id)); render(); });
+}
+
+function renderCareerLab(){
+  const entries=getEntries(), docs=getCareerDocs().slice().reverse(), settings=getSettings();
+  if(!entries.length)
+    return `<div class="card"><div class="card-title">근거 기반 커리어 문서</div>
+      <p class="card-note">기록이 쌓이면 그 근거로 이력서·자소서·면접 답변 초안을 만들어드립니다. 먼저 대화를 분석해보세요.</p></div>`;
+  const needsKey=!settings.apiKey, materials=getCareerMaterials();
+  return `${renderStrengthsCard()}
+  ${renderMaterialsCard()}
+  <div class="card">
+    <div class="card-title">근거 기반 커리어 문서</div>
+    <p class="card-note" style="margin:-6px 0 14px">${entries.length>CAREER_CONTEXT_MAX_PERIODS
+        ?`최근 ${CAREER_CONTEXT_MAX_PERIODS}개 기간(전체 ${entries.length}개 중)의 협업 근거로 초안을 만듭니다.`
+        :`지금까지 쌓인 ${entries.length}개 기간의 협업 근거로 초안을 만듭니다.`}
+      ${settings.careerGoal?`목표(${esc(settings.careerGoal)})에 맞춰 씁니다. `:""}
+      ${materials.length?`자료함에 넣은 ${materials.length}개도 함께 반영합니다. `:""}
+      Slack 원문 그대로가 아니라 역량 서술로 바꿔 씁니다.</p>
+    <div class="seg" style="margin-bottom:14px">
+      ${Object.entries(DOC_TYPES).map(([k,v])=>`<button class="${careerDocType===k?"on":""}" onclick="setCareerDocType('${k}')">${v.label}</button>`).join("")}
+    </div>
+    ${careerDocType==="cover"?`
+      <label>회사명 (선택)</label><input type="text" id="careerCompany" value="${esc(careerCompanyDraft)}" placeholder="예: OO 컴퍼니">
+      <label>자소서 문항</label><input type="text" id="careerQuestion" value="${esc(careerQuestionDraft)}" placeholder="예: 협업 과정에서 갈등을 해결한 경험을 서술하시오">`:""}
+    ${careerDocType==="interview"?`
+      <label>예상 질문 (비워두면 기본 질문으로 만듭니다)</label>
+      <input type="text" id="careerQuestion" value="${esc(careerQuestionDraft)}" placeholder="예: 협업할 때 본인의 강점은 무엇인가요?">`:""}
+    ${careerDocType==="growth"?`<div class="card-note" style="margin:-6px 0 14px">"부족한 점을 어떻게 극복했는지" 같은 질문용입니다.
+      점수·인사이트가 아니라 <b>검증된 다짐(해볼 것에서 실제로 확인된 변화)</b>만 근거로 씁니다.</div>`:""}
+    ${needsKey?`<div class="card-note">API 키가 있어야 실제로 생성됩니다. <button class="link" onclick="go('settings')">설정하러 가기</button></div>`:""}
+    ${careerError?`<div class="error-box">${esc(careerError)}</div>`:""}
+    ${careerBusy?`<div class="loading"><div class="spinner"></div>근거를 정리하는 중이에요</div>`:""}
+    <button class="btn btn-primary btn-full" ${careerBusy||needsKey?"disabled":""} onclick="runCareerDoc()">초안 만들기</button>
+  </div>
+  ${docs.length?`<div class="card"><div class="card-title">만든 초안</div>${docs.map(d=>`
+    <div class="hist" style="cursor:pointer" onclick="openCareerDoc('${d.id}')">
+      <div class="hist-date">${fmtTick(d.createdAt)}</div>
+      <div class="hist-type">${DOC_TYPES[d.kind]?.label||d.kind}${d.editedAt?" ✎":d.regeneratedAt?" ↻":""}</div>
+      <div style="flex:1;font-size:13px;color:var(--text-mid);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(d.title)}</div>
+      <button class="modal-close" style="font-size:14px" onclick="event.stopPropagation();deleteCareerDoc('${d.id}')">×</button>
+    </div>`).join("")}</div>`:""}`;
+}
+
+function renderRelationshipRadarCard(){
+  return soon("관계 온도 레이더",
+    "특정 동료와의 상호작용이 평소보다 줄었는지 봅니다. 동료별 주차 스냅샷이 쌓여야 합니다.",
+    `<div class="sig"><div class="sig-dot" style="background:var(--yellow)"></div><div>
+       <div class="sig-t">이하늘 · 대화가 줄었습니다</div>
+       <div class="sig-d">지난 기간 5회 → 이번 기간 2회. 시안 확정 후 접점이 사라졌습니다.</div></div></div>
+     <div class="sig"><div class="sig-dot" style="background:var(--yellow)"></div><div>
+       <div class="sig-t">강수아 · 대화 시간대가 밤으로 밀렸습니다</div>
+       <div class="sig-d">평균 대화 시각이 오후 3시 → 밤 10시로 이동했습니다.</div></div></div>
+     <div class="sig"><div class="sig-dot" style="background:var(--green)"></div><div>
+       <div class="sig-t">정민우 · 평소와 같습니다</div>
+       <div class="sig-d">주 4~5회 유지 중입니다.</div></div></div>`);
+}
+
+function renderRecognitionCard(){
+  return soon("감사·인정 수지 코치",
+    "받은 도움 대비 표현한 인정의 비율을 봅니다. 다른 사람을 이끄는 역할일 때만 켜집니다.",
+    `<div class="subhead">이번 기간 수지</div>
+     <div class="bal">
+       <div style="width:70%;background:var(--blue)">받은 도움 7</div>
+       <div style="width:30%;background:var(--blue-dim);color:var(--text-hi)">표현한 인정 3</div></div>
+     <div class="kv"><span class="kv-k">강수아</span><span class="kv-v">도움 3 · 인정 0</span></div>
+     <div class="kv"><span class="kv-k">박서준</span><span class="kv-v">도움 2 · 인정 2</span></div>
+     <div class="kv"><span class="kv-k">이하늘</span><span class="kv-v">도움 2 · 인정 1</span></div>
+     <div class="card-note">강수아님은 인증 이슈를 우회로 해결해줬는데 아직 인사를 못 하셨네요.</div>`);
+}
+
+function renderResumeBriefingCard(){
+  return soon("재개 브리핑",
+    "3주 넘게 조용하던 사람이 다시 연락하면, 마지막에 무슨 얘기를 했는지 먼저 띄웁니다.",
+    `<div class="soon-head">
+       <span class="badge badge-promise">23일 만</span><span class="badge">이하늘</span></div>
+     <div class="subhead">마지막 대화</div>
+     <div class="msg"><div class="msg-meta">이하늘 · 07/29 15:12</div>
+       <div class="msg-text">반영하겠습니다</div></div>
+     <div class="subhead" style="margin-top:12px">그때 정리 안 된 것</div>
+     <div class="kv"><span class="kv-k">빈 화면 시안 최종본</span><span class="kv-v">확정 여부 미확인</span></div>
+     <div class="kv"><span class="kv-k">버튼 문구 "마지막 조건 지우기"</span><span class="kv-v">반영 확인 안 됨</span></div>`);
+}
+
+/* ============================================================
+   추이 · 동료 · 기록(기간/도감/트로피)
+   ============================================================ */
+
+function renderTrend(){
+  const entries=getEntries();
+  if(!entries.length) return `<div class="empty"><h2>그래프는 기록이 있어야 나옵니다</h2><p>대화를 한 번만 넣어보세요.</p></div>`;
+  const latest=entries[entries.length-1], prev=entries.length>1?entries[entries.length-2]:null;
+  const idx=entries.length-1;
+  return `<div class="card"><div class="card-title">협업 항목별 비교</div>${radarChart(latest,prev,latest.benchmark)}</div>
+    ${renderInsights(latest)}
+    ${latest.activity?.length?`<div class="card"><div class="card-title">시간대별 분포</div>${heatmap(latest.activity,idx)}</div>`:""}
+    ${renderBurnoutCard()}
+    <div class="card"><div class="card-title">협업지수 추이</div>${multiTrendChart(entries,hiddenSeries)}</div>
+    <div class="card"><div class="card-title">히어로 맵 · 나의 궤적</div>${heroMap(entries)}
+      <div class="card-note">가로는 일한 양, 세로는 점수. 파란 점이 지금이고 점선은 지나온 길입니다.</div></div>
+    <div class="card"><div class="card-title">업무 구성 변화</div>${mixTrend(entries)}
+      <div class="card-note">제일 비중이 큰 게 유형 뒷글자를 정합니다.</div></div>`;
+}
+
+function renderColleagues(){
+  const list=getColleagues().sort((a,b)=>b.interactionCount-a.interactionCount);
+  if(!list.length) return `<div class="empty"><h2>아직 아무도 없네요</h2><p>대화를 넣으면 같이 일한 사람들이 여기 모입니다.</p></div>`;
+  const total=getEntries().length;
+  return `${renderRelationshipRadarCard()}
+    ${renderRecognitionCard()}
+    ${renderResumeBriefingCard()}
+    <div class="card"><div class="card-title">동료 사용설명서</div>
+    ${list.map(c=>{ const d=daysAgo(c.lastInteraction);
+      return `<div class="clg"><div class="clg-head"><div class="clg-name">${esc(c.name)}</div>
+          <div class="clg-meta">${total?`${c.interactionCount}/${total}개 기간 등장`:`${c.interactionCount}개 기간`} · 최근 ${d<=0?"최근":`${d}일 전`}</div></div>
+        ${c.observedPatterns.map(p=>`<div class="clg-pattern">${esc(p)}</div>`).join("")}</div>`;}).join("")}
+    </div><div class="footer-note">여기 적힌 건 나만 봅니다. 내보내기 버튼은 일부러 안 만들었어요.</div>`;
+}
+
+function renderDex(){
+  const entries=getEntries();
+  const owned={};
+  entries.forEach(e=>{ const c=typeCode(e); if(c) owned[c]=(owned[c]||0)+1; });
+  const got=Object.keys(owned).length;
+  const rep=representativeType(entries);
+  return `<div class="card">
+    <div class="card-title">유형 도감<span style="font-size:13px;color:var(--text-mid)">${got} / 16</span></div>
+    <div class="dex-progress"><div class="track"><div class="fill" style="width:${got/16*100}%"></div></div>
+      <span style="font-size:12.5px;color:var(--text-mid);font-weight:600">${Math.round(got/16*100)}%</span></div>
+    <div class="dex">${TYPE_CODES.map(c=>{
+      const has=!!owned[c];
+      return has
+        ? `<div class="dex-cell" onclick="openTypeInfo('${c}')">${avatarHTML(c,"a-sm")}
+            <div class="dex-name">${esc(TYPES[c].n)}</div><div class="dex-code">${c} · ${owned[c]}회</div></div>`
+        : `<div class="dex-cell locked" onclick="openTypeInfo('${c}')"><div class="dex-lock">?</div>
+            <div class="dex-name" style="color:var(--text-low)">${esc(TYPES[c].n)}</div><div class="dex-code">${c}</div></div>`;
+    }).join("")}</div>
+    ${rep?`<div class="rep-row">${avatarHTML(rep,"a-md")}
+      <div class="rep-text"><b>요즘의 나</b><br>${TYPES[rep].e} <b>${esc(TYPES[rep].n)}</b> · ${rep}</div></div>`:""}
+    <div class="card-note">일한 양, 협업 점수, 주로 한 일 — 이 셋이 유형을 정합니다. 칸을 눌러보세요.</div>
+  </div>`;
+}
+
+function renderTrophies(){
+  const store=getTrophyStore();
+  const byId=Object.fromEntries(store.earned.map(t=>[t.id,t]));
+  const got=store.earned.length;
+  const row=r=>{
+    const t=byId[r.id];
+    if(!t) return `<div class="trophy locked"><div class="tr-icon">${r.e}</div>
+      <div><div class="tr-name">${esc(r.n)}</div><div class="tr-desc">${esc(r.d)}</div></div></div>`;
+    return `<div class="trophy"><div class="tr-icon">${r.e}</div>
+      <div><div class="tr-name">${esc(r.n)}
+        ${t.retro?`<span class="tag-retro">지난 기록에서 찾음</span>`:""}
+        ${!t.seen&&!t.retro?`<span class="tag-new">NEW</span>`:""}</div>
+        <div class="tr-desc">${esc(r.d)}</div>
+        <div class="tr-when">${t.where?esc(t.where)+" · ":""}${fmtTick(t.earnedAt)} 획득</div></div></div>`;
+  };
+  const earned=TROPHY_RULES.filter(r=>byId[r.id]), locked=TROPHY_RULES.filter(r=>!byId[r.id]);
+  return `<div class="card">
+    <div class="card-title">트로피<span style="font-size:13px;color:var(--text-mid)">${got} / ${TROPHY_RULES.length}</span></div>
+    <div class="dex-progress"><div class="track"><div class="fill" style="width:${got/TROPHY_RULES.length*100}%"></div></div>
+      <span style="font-size:12.5px;color:var(--text-mid);font-weight:600">${Math.round(got/TROPHY_RULES.length*100)}%</span></div>
+    ${earned.length?earned.map(row).join(""):`<div class="card-note">아직 받은 트로피가 없습니다.</div>`}
+    ${locked.length?`<div class="subhead" style="margin-top:18px">아직 남은 것</div>${locked.map(row).join("")}`:""}
+    <div class="card-note">새 트로피가 생기면 지난 기록까지 다시 훑어서 채워드립니다.</div>
+  </div>`;
+}
+
+function renderRecords(){
+  const entries=getEntries().slice().reverse();
+  const tabs=`<div class="seg" style="margin-bottom:14px">
+    <button class="${recordTab==="periods"?"on":""}" onclick="setRecordTab('periods')">기간별 기록</button>
+    <button class="${recordTab==="types"?"on":""}" onclick="setRecordTab('types')">유형 도감</button>
+    <button class="${recordTab==="trophies"?"on":""}" onclick="setRecordTab('trophies')">트로피</button>
+    <button class="${recordTab==="career"?"on":""}" onclick="setRecordTab('career')">커리어 로그</button></div>`;
+  if(recordTab==="types")    return tabs+renderDex();
+  if(recordTab==="trophies") return tabs+renderTrophies();
+  if(recordTab==="career")   return tabs+renderCareerLab();
+
+  if(!entries.length) return tabs+`<div class="empty"><h2>아직 비어 있어요</h2><p>분석할 때마다 여기 한 줄씩 쌓입니다.</p></div>`;
+  const rows=entries.map(e=>{ const c=typeCode(e);
+    return `<div class="hist"><div class="hist-date">${esc(entryLabel(e))}</div>
+      <div class="hist-type">${c?`${TYPES[c].e} ${esc(TYPES[c].n)}`:esc(e.type)}</div>
+      <div class="track" style="flex:0 0 80px;"><div class="fill" style="width:${avgScore(e.scores)}%"></div></div>
+      <div class="hist-score">${avgScore(e.scores)}</div></div>`;}).join("");
+  const done=getCommitments().filter(c=>c.status==="done"||c.status==="missed");
+  const doneList=done.length?`<div class="card"><div class="card-title">지난 약속</div>
+    ${done.map(c=>`<div class="cmt"><div class="cmt-head">
+      <span class="badge ${c.source==="self_promise"?"badge-promise":"badge-exp"}">${c.source==="self_promise"?"내 약속":"제안"}</span>
+      <span class="badge ${c.status==="done"?"badge-pos":"badge-neg"}">${c.status==="done"?"완료":"미이행"}</span></div>
+      <p class="cmt-title">${esc(c.title)}</p></div>`).join("")}</div>`:"";
+  return tabs+`<div class="card"><div class="card-title">기간별 기록</div>${rows}</div>${doneList}`;
+}
+
+/* ============================================================
+   렌더 루트
+   ============================================================ */
+
+const TABS=[["home","홈"],["trend","추이"],["colleagues","동료"],["records","기록"],["settings","설정"]];
+
+function render(){
+  const nv=view==="metric"?"home":view;
+  const onboarding=view==="intro"&&!getSettings().onboarded;
+  document.getElementById('nav').style.display=onboarding?"none":"flex";
+  document.getElementById('nav').innerHTML=TABS
+    .map(([k,l])=>`<button class="${nv===k?"active":""}" onclick="go('${k}')">${l}</button>`).join("");
+  const entries=getEntries();
+  document.getElementById('dateRange').textContent=
+    (view==="home"&&entries.length)?entryLabel(entries[entries.length-1]):"";
+  const map={ settings:renderSettings, paste:renderPaste, colleagues:renderColleagues,
+    records:renderRecords, trend:renderTrend, metric:renderMetric, intro:renderIntro,
+    home:renderHome };
+  const warn = (storageOK || warnDismissed) ? "" : `<div class="stale-banner"
+    style="text-align:left;display:flex;gap:10px;align-items:center;font-size:12px">
+    <span style="flex:1">지금은 기록이 저장되지 않습니다. 창을 닫으면 사라져요.
+      <button class="link" onclick="showStorageHelp()">해결 방법</button></span>
+    <button class="modal-close" style="font-size:16px" onclick="dismissWarn()">×</button></div>`;
+  document.getElementById('content').innerHTML=warn+(map[view]||renderHome)();
+  document.getElementById('modalRoot').innerHTML=renderModal();
+  attachHandlers();
+}
+
+function attachHandlers(){
+  const b=document.getElementById('saveSettingsBtn');
+  if(b) b.onclick=()=>{ setSettings({ ...getSettings(),
+    apiKey:document.getElementById('setApiKey').value.trim(),
+    selfName:document.getElementById('setSelfName').value.trim(),
+    jobRole:document.getElementById('setJobRole').value,
+    careerGoal:document.getElementById('setCareerGoal').value.trim() }); go('home'); };
+  const r=document.getElementById('resetBtn');
+  if(r) r.onclick=()=>askConfirm('전부 지울까요? 되돌릴 수 없습니다.', ()=>{
+    [KEY_ENTRIES,KEY_COMMITMENTS,KEY_COLLEAGUES,KEY_TROPHIES,KEY_CAREER_DOCS,KEY_CAREER_MATERIALS].forEach(k=>{
+      try{ localStorage.removeItem(k); }catch(e){} delete memStore[k]; });
+    go('home'); });
+  const a=document.getElementById('analyzeBtn');
+  if(a) a.onclick=runAnalysis;
+}
+
+(function init(){
+  try{
+    const s=getSettings();
+    evaluateTrophies();          // 기존 기록에 대해 소급 평가
+    if(!s.onboarded) view="intro";
+    else if(!s.apiKey||!s.selfName) view="settings";
+    render();
+  }catch(e){
+    // 초기화가 실패해도 빈 화면이 되지 않도록
+    document.getElementById('content').innerHTML =
+      `<div class="error-box">앱을 시작하지 못했습니다.<br>${esc(e.message||e)}</div>`;
+    console.error(e);
+  }
+})();
+</script>
+</body>
+</html>
